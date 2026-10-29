@@ -24,6 +24,6 @@
     "api/convert.js": { "maxDuration": 60 },
     "api/chat.js": { "maxDuration": 60 },
     "api/youtube.js": { "maxDuration": 60 },
-    "api/amfinder.js": { "maxDuration": 60 }
+    "api/lookup.js": { "maxDuration": 60 }
   }
 }
