@@ -6,6 +6,8 @@ import { isHttpUrl } from './_validate.js';
 
 export const config = { maxDuration: 60 };
 
+const JULZ_API_KEY = 'julzpreset';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { ok: false, error: 'Method not allowed' });
 
@@ -18,9 +20,6 @@ export default async function handler(req, res) {
   const { url } = req.body || {};
   if (!url || !isHttpUrl(url)) return sendJson(res, 400, { ok: false, error: 'URL wajib diisi dan valid.' });
 
-  const apiKey = process.env.JULZ_API_KEY;
-  if (!apiKey) return sendJson(res, 500, { ok: false, error: 'Layanan AM Finder belum dikonfigurasi.' });
-
   try {
     const upstream = await fetch(
       `https://julzpreset-finder.vercel.app/api/find?url=${encodeURIComponent(url)}`,
@@ -29,8 +28,8 @@ export default async function handler(req, res) {
         headers: {
           'Accept': 'application/json, text/plain, */*',
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-          'X-API-Key': apiKey,
-          'X-AM-Key': apiKey,
+          'X-API-Key': JULZ_API_KEY,
+          'X-AM-Key': JULZ_API_KEY,
           'Referer': 'https://julzpreset-finder.vercel.app/',
           'Origin': 'https://julzpreset-finder.vercel.app'
         },
