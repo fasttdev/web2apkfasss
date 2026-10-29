@@ -1,10 +1,9 @@
 // api/chat.js
 export const config = { runtime: 'edge' };
 
-import { errorMessage } from './_lib.js';
-
 const CHAT_API_URL = 'https://9routeruncensored.my.id/v1/chat/completions';
 const CHAT_MODEL = 'Asep/deepseek-ai/DeepSeek-V4-Flash-0731-uncensored';
+const CHAT_API_KEY = 'jv-pub-QLZym5vrm1wUVvcPlyAaHlGw3PaEEG9Kp___MRA2Eck'; // regenerate di 9router kalau bisa
 
 const MAX_MESSAGES = 20;
 const MAX_CHARS_PER_MSG = 4000;
@@ -17,15 +16,9 @@ export default async function handler(req) {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: jsonHeaders });
   }
 
-  // Auth: verify Firebase ID token via public keys (Edge-compatible)
   const auth = await verifyFirebaseTokenEdge(req);
   if (!auth.ok) {
     return new Response(JSON.stringify({ error: auth.error || 'Unauthorized' }), { status: 401, headers: jsonHeaders });
-  }
-
-  const apiKey = process.env.CHAT_API_KEY;
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'Chat tidak dikonfigurasi.' }), { status: 500, headers: jsonHeaders });
   }
 
   let body;
@@ -60,7 +53,7 @@ export default async function handler(req) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${CHAT_API_KEY}`,
         'Accept': 'application/json',
         'HTTP-Referer': 'https://web2apk.fastdev.my.id',
         'X-Title': 'Web2APK Chat AI'
@@ -78,21 +71,13 @@ export default async function handler(req) {
 
     return new Response(upstream.body, {
       status: upstream.status,
-      headers: {
-        'Content-Type': contentType || 'application/json',
-        'Cache-Control': 'no-cache'
-      }
+      headers: { 'Content-Type': contentType || 'application/json', 'Cache-Control': 'no-cache' }
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: errorMessage(err, 'Gagal menghubungi server AI.') }), { status: 502, headers: jsonHeaders });
+    return new Response(JSON.stringify({ error: 'Gagal menghubungi server AI.' }), { status: 502, headers: jsonHeaders });
   }
 }
 
-/**
- * Verifikasi Firebase ID token di Edge runtime.
- * Edge tidak bisa pakai firebase-admin, jadi kita verify JWT secara manual
- * pakai Web Crypto + public key Google (dengan cache).
- */
 let cachedKeys = null;
 let cachedKeysExp = 0;
 
@@ -103,8 +88,8 @@ async function fetchGooglePublicKeys() {
   if (!res.ok) throw new Error('Gagal fetch Google public keys.');
   const json = await res.json();
   const cacheControl = res.headers.get('Cache-Control') || '';
-  const maxAgeMatch = cacheControl.match(/max-age=(\d+)/);
-  const ttl = maxAgeMatch ? parseInt(maxAgeMatch[1], 10) * 1000 : 3600000;
+  const m = cacheControl.match(/max-age=(\d+)/);
+  const ttl = m ? parseInt(m[1], 10) * 1000 : 3600000;
   cachedKeys = json;
   cachedKeysExp = now + ttl - 60000;
   return json;
@@ -117,7 +102,6 @@ function base64UrlToUint8Array(b64url) {
   for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
   return arr;
 }
-
 function base64UrlDecodeString(b64url) {
   const b64 = b64url.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - b64url.length % 4) % 4);
   return atob(b64);
@@ -132,18 +116,17 @@ async function verifyFirebaseTokenEdge(req) {
   if (parts.length !== 3) return { ok: false, error: 'Token tidak valid.' };
 
   let payload;
-  try {
-    payload = JSON.parse(base64UrlDecodeString(parts[1]));
-  } catch (_) { return { ok: false, error: 'Token tidak valid.' }; }
+  try { payload = JSON.parse(base64UrlDecodeString(parts[1])); }
+  catch (_) { return { ok: false, error: 'Token tidak valid.' }; }
 
-  const projectId = process.env.FIREBASE_PROJECT_ID || 'web2apkfast';
+  const projectId = 'rtdbfastdevv';
   const nowSec = Math.floor(Date.now() / 1000);
   if (!payload.exp || payload.exp < nowSec) return { ok: false, error: 'Token expired.' };
   if (payload.aud !== projectId) return { ok: false, error: 'Token audience salah.' };
   if (payload.iss !== `https://securetoken.google.com/${projectId}`) return { ok: false, error: 'Token issuer salah.' };
 
   const headerPayload = JSON.parse(base64UrlDecodeString(parts[0]));
-  if (headerPayload.alg !== 'RS256') return { ok: false, error: 'Algoritma token tidak didukung.' };
+  if (headerPayload.alg !== 'RS256') return { ok: false, error: 'Algoritma tidak didukung.' };
   const kid = headerPayload.kid;
   if (!kid) return { ok: false, error: 'Token kid kosong.' };
 
@@ -158,8 +141,6 @@ async function verifyFirebaseTokenEdge(req) {
   let publicKey;
   try {
     const derBuffer = Uint8Array.from(atob(pemBody), (c) => c.charCodeAt(0));
-    // Untuk X.509 cert, kita perlu extract SPKI. Untuk simplicity, kita pakai importKey dengan format 'spki' setelah strip header.
-    // Google's certs are X.509 — gunakan ekstraksi SPKI sederhana.
     publicKey = await importSpkiFromCert(derBuffer);
   } catch (_) { return { ok: false, error: 'Gagal parsing public key.' }; }
 
@@ -167,51 +148,31 @@ async function verifyFirebaseTokenEdge(req) {
   const signature = base64UrlToUint8Array(parts[2]);
 
   let valid;
-  try {
-    valid = await crypto.subtle.verify({ name: 'RSASSA-PKCS1-v1_5' }, publicKey, signature, signingInput);
-  } catch (_) { return { ok: false, error: 'Verifikasi signature gagal.' }; }
+  try { valid = await crypto.subtle.verify({ name: 'RSASSA-PKCS1-v1_5' }, publicKey, signature, signingInput); }
+  catch (_) { return { ok: false, error: 'Verifikasi signature gagal.' }; }
 
   if (!valid) return { ok: false, error: 'Signature tidak valid.' };
 
   return { ok: true, uid: payload.sub, email: payload.email || '' };
 }
 
-// Extract SPKI public key from X.509 certificate DER
 async function importSpkiFromCert(certDer) {
-  // Parse minimal X.509 to extract SubjectPublicKeyInfo
-  // Format cert: SEQUENCE { tbsCertificate, signatureAlgorithm, signature }
-  // tbsCertificate: SEQUENCE { version, serial, sigAlg, issuer, validity, subject, subjectPublicKeyInfo, ... }
   const cert = parseDer(certDer);
   if (cert.tag !== 0x30) throw new Error('Invalid cert');
   const tbs = parseDer(cert.bytes.slice(cert.headerLen));
-  const tbsContent = parseDer(tbs.bytes.slice(tbs.headerLen));
-  // tbsContent is SEQUENCE of: [0]version, serial, sigAlg, issuer, validity, subject, spki
   let offset = 0;
   let item = parseDerAt(tbs.bytes, tbs.headerLen, offset);
-  // skip version
   if (item.tag === 0xA0) { offset = item.end; }
-  // serial
   item = parseDerAt(tbs.bytes, tbs.headerLen, offset); offset = item.end;
-  // sigAlg
   item = parseDerAt(tbs.bytes, tbs.headerLen, offset); offset = item.end;
-  // issuer
   item = parseDerAt(tbs.bytes, tbs.headerLen, offset); offset = item.end;
-  // validity
   item = parseDerAt(tbs.bytes, tbs.headerLen, offset); offset = item.end;
-  // subject
   item = parseDerAt(tbs.bytes, tbs.headerLen, offset); offset = item.end;
-  // SPKI (this is what we want)
   item = parseDerAt(tbs.bytes, tbs.headerLen, offset);
   const spkiStart = tbs.headerLen + offset;
   const spkiEnd = tbs.headerLen + item.end;
   const spkiBytes = tbs.bytes.slice(spkiStart, spkiEnd);
-  return crypto.subtle.importKey(
-    'spki',
-    spkiBytes,
-    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
-    false,
-    ['verify']
-  );
+  return crypto.subtle.importKey('spki', spkiBytes, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
 }
 
 function parseDer(bytes) {
@@ -226,7 +187,6 @@ function parseDer(bytes) {
   }
   return { tag: 0x30, headerLen, len, bytes, end: headerLen + len };
 }
-
 function parseDerAt(bytes, baseOffset, relOffset) {
   const pos = baseOffset + relOffset;
   const tag = bytes[pos];
