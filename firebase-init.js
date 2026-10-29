@@ -4,14 +4,14 @@ import { getAuth, setPersistence, browserLocalPersistence } from "https://www.gs
 import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDeZGVxThRgc9CWvt8i9pEHdnpO41b_PQo",
-  authDomain: "web2apkfast.firebaseapp.com",
-  databaseURL: "https://web2apkfast-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "web2apkfast",
-  storageBucket: "web2apkfast.firebasestorage.app",
-  messagingSenderId: "161520799770",
-  appId: "1:161520799770:web:f94ad3a944c04da94341a3",
-  measurementId: "G-12QY3D6J1T"
+  apiKey: "AIzaSyAALMSwGdC4PnrZDFr4MBaKtuG4J4duu0w",
+  authDomain: "rtdbfastdevv.firebaseapp.com",
+  databaseURL: "https://rtdbfastdevv-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "rtdbfastdevv",
+  storageBucket: "rtdbfastdevv.firebasestorage.app",
+  messagingSenderId: "382247601725",
+  appId: "1:382247601725:web:bfdbdf2225e384ad684c54",
+  measurementId: "G-PQCDVBJ5X1"
 };
 
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
