@@ -15,6 +15,10 @@
       "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
     }
   ],
+  "rewrites": [
+    { "source": "/api/tikip", "destination": "/api/lookup?tool=tikip" },
+    { "source": "/api/amfinder", "destination": "/api/lookup?tool=amfinder" }
+  ],
   "functions": {
     "api/build.js": { "maxDuration": 300 },
     "api/convert.js": { "maxDuration": 60 },
