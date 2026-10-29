@@ -12,15 +12,14 @@
     },
     {
       "source": "/api/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store, max-age=0" }
-      ]
+      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
     }
   ],
   "functions": {
     "api/build.js": { "maxDuration": 300 },
     "api/convert.js": { "maxDuration": 60 },
     "api/chat.js": { "maxDuration": 60 },
-    "api/youtube.js": { "maxDuration": 60 }
+    "api/youtube.js": { "maxDuration": 60 },
+    "api/amfinder.js": { "maxDuration": 60 }
   }
 }
