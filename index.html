@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090d18">
+  <title>Web2APK by FastDev</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="auth-guard.css">
+  <script>document.documentElement.classList.add('auth-pending');</script>
+  <script type="module" src="firebase-init.js"></script>
+  <script type="module" src="firebase-auth-guard.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="auth-guard" id="authGuard">
+    <div class="auth-guard-inner">
+      <div class="auth-guard-spinner"></div>
+      <p id="authGuardText">Memeriksa sesi…</p>
+    </div>
+  </div>
+
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <main class="app">
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="FastDev Web2APK">
+        <span class="brand-icon"><i data-lucide="layers"></i></span>
+        <span class="brand-copy">
+          <strong>Web2APK</strong>
+          <small>BY FASTDEV</small>
+        </span>
+      </a>
+      <button class="icon-button" id="helpBtn" type="button" aria-label="Bantuan">
+        <i data-lucide="circle-help"></i>
+      </button>
+    </header>
+
+    <section class="hero" id="home">
+      <div class="hero-label"><span class="live-dot"></span> ANDROID APP BUILDER</div>
+      <h1>Website kamu,<br>jadi <span>aplikasi.</span></h1>
+      <p>Ubah website menjadi aplikasi Android dengan konfigurasi yang bisa kamu sesuaikan.</p>
+
+      <div class="hero-preview">
+        <div class="preview-glow"></div>
+        <div class="phone">
+          <div class="phone-top"><span></span><span></span></div>
+          <div class="phone-screen">
+            <div class="mock-logo"><i data-lucide="globe"></i></div>
+            <div class="mock-line wide"></div>
+            <div class="mock-line"></div>
+            <div class="mock-card">
+              <i data-lucide="smartphone"></i>
+              <div><b>Website</b><small>Android ready</small></div>
+              <i data-lucide="check-circle-2"></i>
+            </div>
+            <div class="mock-bars"><span></span><span></span><span></span></div>
+          </div>
+        </div>
+        <div class="float-chip"><i data-lucide="zap"></i> Simple build</div>
+        <div class="float-chip second"><i data-lucide="shield-check"></i> FastDev</div>
+      </div>
+    </section>
+
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">WORKSPACE</span>
+        <h2>Build aplikasi</h2>
+      </div>
+      <span class="version-chip" id="limitChip">
+        <span class="live-dot"></span>
+        <span id="limitText">Memuat limit...</span>
+      </span>
+    </div>
+
+    <form id="buildForm" class="build-form" enctype="multipart/form-data">
+      <section class="panel">
+        <div class="panel-heading">
+          <span class="section-icon"><i data-lucide="app-window"></i></span>
+          <div><h3>Informasi aplikasi</h3><p>Identitas APK yang akan dibuat.</p></div>
+        </div>
+
+        <div class="field">
+          <label for="appName">Nama aplikasi</label>
+          <div class="input-wrap">
+            <i data-lucide="smartphone"></i>
+            <input id="appName" name="appName" type="text" placeholder="Contoh: Aplikasi Saya" required maxlength="50">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="packageName">Package name</label>
+          <div class="input-wrap">
+            <i data-lucide="package"></i>
+            <input id="packageName" name="packageName" type="text" value="com.fastech.app" placeholder="com.nama.aplikasi" required>
+          </div>
+          <small class="field-hint">Contoh: com.fastech.aplikasi</small>
+        </div>
+
+        <div class="field">
+          <label>Sumber aplikasi</label>
+          <div class="segmented">
+            <button type="button" class="seg-btn active" data-source="url">
+              <i data-lucide="globe"></i> Website
+            </button>
+            <button type="button" class="seg-btn" data-source="file">
+              <i data-lucide="file-code-2"></i> File HTML
+            </button>
+          </div>
+          <input type="hidden" id="sourceType" name="sourceType" value="url">
+        </div>
+
+        <div class="field" id="urlField">
+          <label for="websiteUrl">URL website</label>
+          <div class="input-wrap">
+            <i data-lucide="link"></i>
+            <input id="websiteUrl" name="websiteUrl" type="url" placeholder="https://websitekamu.com">
+          </div>
+        </div>
+
+        <div class="field hidden" id="htmlField">
+          <label for="htmlFile">File HTML</label>
+          <label class="upload-box" for="htmlFile">
+            <span class="upload-icon"><i data-lucide="upload"></i></span>
+            <span class="upload-copy"><b>Pilih file HTML</b><small id="htmlFileName">Belum ada file dipilih</small></span>
+            <i data-lucide="plus"></i>
+          </label>
+          <input class="file-input" id="htmlFile" name="htmlFile" type="file" accept=".html,.htm,text/html">
+        </div>
+
+        <div class="field">
+          <label for="zipFile">File tambahan <span class="optional">OPSIONAL</span></label>
+          <label class="upload-box" for="zipFile">
+            <span class="upload-icon"><i data-lucide="folder-archive"></i></span>
+            <span class="upload-copy"><b>Pilih file ZIP</b><small id="zipFileName">Asset website (jika diperlukan)</small></span>
+            <i data-lucide="plus"></i>
+          </label>
+          <input class="file-input" id="zipFile" name="zipFile" type="file" accept=".zip,application/zip">
+        </div>
+
+        <div class="field">
+          <label for="iconFile">Ikon aplikasi <span class="optional">OPSIONAL</span></label>
+          <label class="upload-box" for="iconFile">
+            <span class="upload-icon"><i data-lucide="image"></i></span>
+            <span class="upload-copy"><b>Pilih ikon</b><small id="iconFileName">PNG atau JPG</small></span>
+            <i data-lucide="plus"></i>
+          </label>
+          <input class="file-input" id="iconFile" name="iconFile" type="file" accept="image/png,image/jpeg,image/webp">
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <span class="section-icon"><i data-lucide="palette"></i></span>
+          <div><h3>Layar pembuka</h3><p>Atur tampilan saat aplikasi dibuka.</p></div>
+        </div>
+
+        <div class="choice-grid">
+          <label class="choice selected">
+            <input type="radio" name="splashType" value="default" checked>
+            <span class="choice-icon"><i data-lucide="sparkles"></i></span>
+            <b>Default</b><small>Standar</small>
+          </label>
+          <label class="choice">
+            <input type="radio" name="splashType" value="image">
+            <span class="choice-icon"><i data-lucide="image"></i></span>
+            <b>Gambar</b><small>Image splash</small>
+          </label>
+          <label class="choice">
+            <input type="radio" name="splashType" value="html">
+            <span class="choice-icon"><i data-lucide="code-2"></i></span>
+            <b>HTML</b><small>Custom HTML</small>
+          </label>
+          <label class="choice">
+            <input type="radio" name="splashType" value="video">
+            <span class="choice-icon"><i data-lucide="film"></i></span>
+            <b>Video</b><small>Video splash</small>
+          </label>
+        </div>
+
+        <div class="field hidden" id="splashImageField">
+          <label for="splashImage">Gambar splash</label>
+          <input class="native-file" id="splashImage" name="splashImage" type="file" accept="image/*">
+        </div>
+
+        <div class="field hidden" id="splashHtmlField">
+          <label for="splashHtml">Kode HTML splash</label>
+          <textarea id="splashHtml" name="splashHtml" rows="5" placeholder="Masukkan HTML untuk layar pembuka..."></textarea>
+        </div>
+
+        <div class="field hidden" id="splashVideoField">
+          <label for="splashVideo">Video splash</label>
+          <input class="native-file" id="splashVideo" name="splashVideo" type="file" accept="video/*">
+        </div>
+
+        <div class="field">
+          <label>Orientasi layar</label>
+          <div class="segmented">
+            <button type="button" class="seg-btn active" data-orientation="portrait">
+              <i data-lucide="smartphone"></i> Portrait
+            </button>
+            <button type="button" class="seg-btn" data-orientation="landscape">
+              <i data-lucide="monitor"></i> Landscape
+            </button>
+            <button type="button" class="seg-btn" data-orientation="auto">
+              <i data-lucide="refresh-cw"></i> Auto
+            </button>
+          </div>
+          <input type="hidden" id="orientation" name="orientation" value="portrait">
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <span class="section-icon"><i data-lucide="settings-2"></i></span>
+          <div><h3>Versi aplikasi</h3><p>Informasi versi untuk APK kamu.</p></div>
+        </div>
+
+        <div class="two-col">
+          <div class="field">
+            <label for="versionName">Version name</label>
+            <div class="input-wrap">
+              <i data-lucide="tag"></i>
+              <input id="versionName" name="versionName" type="text" value="1.0.0" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="versionCode">Version code</label>
+            <div class="input-wrap">
+              <i data-lucide="hash"></i>
+              <input id="versionCode" name="versionCode" type="number" value="1" min="1" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="notice">
+          <i data-lucide="info"></i>
+          <p>Pastikan konfigurasi benar sebelum memulai build. Waktu proses bergantung pada server.</p>
+        </div>
+      </section>
+
+      <button class="build-button" id="buildButton" type="submit">
+        <span class="build-button-icon"><i data-lucide="hammer"></i></span>
+        <span><b>Build APK</b><small>Mulai proses pembuatan aplikasi</small></span>
+        <i class="build-arrow" data-lucide="arrow-up-right"></i>
+      </button>
+    </form>
+
+    <section class="panel progress-panel hidden" id="progressCard">
+      <div class="panel-heading">
+        <span class="section-icon"><i data-lucide="loader-circle"></i></span>
+        <div><h3 id="progressTitle">Menyiapkan build...</h3><p id="progressMessage">Permintaan sedang diproses.</p></div>
+      </div>
+      <div class="progress-track"><span id="progressBar"></span></div>
+      <div class="progress-meta"><span id="progressPercent">0%</span><span id="progressStatus">Memulai</span></div>
+      <pre class="log-box hidden" id="buildLog"></pre>
+    </section>
+
+    <section class="panel result-panel hidden" id="resultCard">
+      <div class="result-icon"><i data-lucide="check-circle-2"></i></div>
+      <h3 id="resultTitle">Build selesai</h3>
+      <p id="resultMessage">Hasil build tersedia.</p>
+      <a class="download-button hidden" id="downloadLink" href="#" download>
+        <i data-lucide="download"></i> Unduh APK
+      </a>
+    </section>
+
+    <footer class="footer">
+      <span class="footer-mark"><i data-lucide="layers"></i></span>
+      <p><b>FASTDEV</b> · Web2APK Builder</p>
+      <small>Made for your next idea.</small>
+    </footer>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navigasi utama">
+    <a href="index.html" class="nav-item active" aria-current="page">
+      <i data-lucide="hammer"></i><span>Build</span>
+    </a>
+    <a href="tools.html" class="nav-item">
+      <i data-lucide="wrench"></i><span>Tools</span>
+    </a>
+    <a href="pricing.html" class="nav-item">
+      <i data-lucide="shield-check"></i><span>Akses</span>
+    </a>
+    <a href="akun.html" class="nav-item">
+      <i data-lucide="user-round"></i><span>Akun</span>
+    </a>
+  </nav>
+
+  <div class="modal-backdrop hidden" id="helpModal">
+    <section class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="closeHelp" type="button" aria-label="Tutup">
+        <i data-lucide="x"></i>
+      </button>
+      <span class="section-icon"><i data-lucide="circle-help"></i></span>
+      <h3>Bantuan Web2APK</h3>
+      <p>Isi informasi aplikasi, pilih sumber website atau file HTML, sesuaikan tampilan, lalu tekan Build APK.</p>
+      <p>Jika build gagal, periksa pesan server dan pastikan file yang diunggah sesuai format.</p>
+      <button class="primary-button" id="closeHelpBottom" type="button">Mengerti</button>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
