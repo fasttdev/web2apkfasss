@@ -1,24 +1,46 @@
-// api/deploy.js
-import { requireUser } from './_auth.js';
-import { sendJson, errorMessage } from './_lib.js';
-import { checkRateLimit, rateLimitMiddleware } from './_rate-limit.js';
+import { sendJson, errorMessage, getClientIp } from './_lib.js';
 import { looksLikePhishing } from './_validate.js';
 
 export const config = { api: { bodyParser: { sizeLimit: '3mb' } } };
 
 const MAX_HTML_SIZE = 2 * 1024 * 1024;
 const MAX_ICON_SIZE = 500 * 1024;
+const RATE_LIMIT = 5;
+const RATE_WINDOW_MS = 60 * 60 * 1000;
+
+const ipBuckets = new Map();
+
+function checkIpLimit(ip) {
+  const now = Date.now();
+  let bucket = ipBuckets.get(ip);
+  if (!bucket || (now - bucket.start) > RATE_WINDOW_MS) {
+    bucket = { count: 0, start: now };
+    ipBuckets.set(ip, bucket);
+  }
+  if (bucket.count >= RATE_LIMIT) {
+    const resetIn = Math.ceil((RATE_WINDOW_MS - (now - bucket.start)) / 1000);
+    return { allowed: false, resetIn };
+  }
+  bucket.count++;
+  if (ipBuckets.size > 5000) {
+    for (const [k, v] of ipBuckets) {
+      if ((now - v.start) > RATE_WINDOW_MS) ipBuckets.delete(k);
+    }
+  }
+  return { allowed: true };
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return sendJson(res, 405, { success: false, error: 'Gunakan metode POST.' });
   }
 
-  let auth;
-  try { auth = await requireUser(req); }
-  catch (err) { return sendJson(res, err.status || 401, { success: false, error: err.message }); }
-
-  if (await rateLimitMiddleware(res, await checkRateLimit(auth.user.uid, 'deploy', 5, 3600))) return;
+  const ip = getClientIp(req);
+  const rl = checkIpLimit(ip);
+  if (!rl.allowed) {
+    res.setHeader('Retry-After', String(rl.resetIn));
+    return sendJson(res, 429, { success: false, error: `Terlalu banyak deploy. Coba lagi dalam ${rl.resetIn} detik.` });
+  }
 
   const token = process.env.VERCEL_TOKEN;
   if (!token) return sendJson(res, 500, { success: false, error: 'Konfigurasi server belum lengkap.' });
@@ -48,9 +70,7 @@ export default async function handler(req, res) {
     return sendJson(res, 400, { success: false, error: 'Nama project minimal 3 karakter, huruf/angka/strip.' });
   }
 
-  // Prefix dengan uid untuk cegah takeover antar user
-  const prefix = 'u' + auth.user.uid.slice(0, 8).toLowerCase();
-  const finalName = `${prefix}-${cleanName}`;
+  const finalName = cleanName;
 
   try {
     const createProjectRes = await fetch('https://api.vercel.com/v9/projects', {
@@ -61,7 +81,11 @@ export default async function handler(req, res) {
     });
 
     const projectData = await createProjectRes.json().catch(() => ({}));
-    if (!createProjectRes.ok && projectData.error && projectData.error.code !== 'project_already_exists') {
+
+    if (!createProjectRes.ok) {
+      if (projectData.error && projectData.error.code === 'project_already_exists') {
+        return sendJson(res, 409, { success: false, error: 'Nama project sudah dipakai. Coba nama lain.' });
+      }
       return sendJson(res, 502, { success: false, error: 'Gagal membuat project di Vercel.' });
     }
 
