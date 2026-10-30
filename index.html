@@ -10,20 +10,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="auth-guard.css">
-  <script>document.documentElement.classList.add('auth-pending');</script>
-  <script type="module" src="firebase-init.js"></script>
-  <script type="module" src="firebase-auth-guard.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-  <div class="auth-guard" id="authGuard">
-    <div class="auth-guard-inner">
-      <div class="auth-guard-spinner"></div>
-      <p id="authGuardText">Memeriksa sesi…</p>
-    </div>
-  </div>
-
   <div class="ambient ambient-one"></div>
   <div class="ambient ambient-two"></div>
 
@@ -44,7 +33,7 @@
     <section class="hero" id="home">
       <div class="hero-label"><span class="live-dot"></span> ANDROID APP BUILDER</div>
       <h1>Website kamu,<br>jadi <span>aplikasi.</span></h1>
-      <p>Ubah website menjadi aplikasi Android dengan konfigurasi yang bisa kamu sesuaikan.</p>
+      <p>Ubah website menjadi aplikasi Android. Gratis, tanpa daftar, tanpa login.</p>
 
       <div class="hero-preview">
         <div class="preview-glow"></div>
@@ -72,13 +61,29 @@
         <span class="eyebrow">WORKSPACE</span>
         <h2>Build aplikasi</h2>
       </div>
-      <span class="version-chip" id="limitChip">
+      <span class="version-chip">
         <span class="live-dot"></span>
-        <span id="limitText">Memuat limit...</span>
+        <span>FREE · ∞</span>
       </span>
     </div>
 
     <form id="buildForm" class="build-form" enctype="multipart/form-data">
+      <section class="panel">
+        <div class="panel-heading">
+          <span class="section-icon"><i data-lucide="user"></i></span>
+          <div><h3>Nama kamu</h3><p>Untuk notifikasi ke admin.</p></div>
+        </div>
+
+        <div class="field">
+          <label for="userName">Nama / Nickname</label>
+          <div class="input-wrap">
+            <i data-lucide="user"></i>
+            <input id="userName" name="userName" type="text" placeholder="Contoh: FortechDev" required maxlength="50" minlength="2">
+          </div>
+          <small class="field-hint">Nama ini akan muncul di notifikasi admin. Tidak disimpan.</small>
+        </div>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <span class="section-icon"><i data-lucide="app-window"></i></span>
@@ -240,7 +245,7 @@
 
         <div class="notice">
           <i data-lucide="info"></i>
-          <p>Pastikan konfigurasi benar sebelum memulai build. Waktu proses bergantung pada server.</p>
+          <p>Semua gratis tanpa batas. Pastikan konfigurasi benar sebelum memulai build.</p>
         </div>
       </section>
 
@@ -281,14 +286,17 @@
     <a href="index.html" class="nav-item active" aria-current="page">
       <i data-lucide="hammer"></i><span>Build</span>
     </a>
-    <a href="tools.html" class="nav-item">
-      <i data-lucide="wrench"></i><span>Tools</span>
+    <a href="tools1.html" class="nav-item">
+      <i data-lucide="wrench"></i><span>Tools 1</span>
     </a>
-    <a href="pricing.html" class="nav-item">
-      <i data-lucide="shield-check"></i><span>Akses</span>
+    <a href="tools2.html" class="nav-item">
+      <i data-lucide="package"></i><span>Tools 2</span>
     </a>
-    <a href="akun.html" class="nav-item">
-      <i data-lucide="user-round"></i><span>Akun</span>
+    <a href="search-tools.html" class="nav-item">
+      <i data-lucide="search"></i><span>Cari</span>
+    </a>
+    <a href="info.html" class="nav-item">
+      <i data-lucide="info"></i><span>Info</span>
     </a>
   </nav>
 
@@ -299,8 +307,8 @@
       </button>
       <span class="section-icon"><i data-lucide="circle-help"></i></span>
       <h3>Bantuan Web2APK</h3>
-      <p>Isi informasi aplikasi, pilih sumber website atau file HTML, sesuaikan tampilan, lalu tekan Build APK.</p>
-      <p>Jika build gagal, periksa pesan server dan pastikan file yang diunggah sesuai format.</p>
+      <p>Isi nama kamu, isi informasi aplikasi, pilih sumber website atau file HTML, lalu tekan Build APK.</p>
+      <p>Tidak perlu login. Tidak ada data yang disimpan di server.</p>
       <button class="primary-button" id="closeHelpBottom" type="button">Mengerti</button>
     </section>
   </div>
