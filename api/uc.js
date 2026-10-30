@@ -1,7 +1,4 @@
-// api/uc.js
-import { requireUser } from './_auth.js';
 import { sendJson, errorMessage } from './_lib.js';
-import { checkRateLimit, rateLimitMiddleware } from './_rate-limit.js';
 
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
@@ -134,12 +131,6 @@ async function ucExtract(inputUrl, passcode) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { status: false, error: 'Gunakan metode POST.' });
-
-  let auth;
-  try { auth = await requireUser(req); }
-  catch (err) { return sendJson(res, err.status || 401, { status: false, error: err.message }); }
-
-  if (await rateLimitMiddleware(res, await checkRateLimit(auth.user.uid, 'uc', 15, 3600))) return;
 
   const { url, passcode } = req.body || {};
   if (!url || typeof url !== 'string' || !url.trim()) {
