@@ -1,19 +1,10 @@
-// api/search.js
 import * as cheerio from 'cheerio';
-import { requireUser } from './_auth.js';
 import { sendJson, errorMessage } from './_lib.js';
-import { checkRateLimit, rateLimitMiddleware } from './_rate-limit.js';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method not allowed' });
-
-  let auth;
-  try { auth = await requireUser(req); }
-  catch (err) { return sendJson(res, err.status || 401, { error: err.message }); }
-
-  if (await rateLimitMiddleware(res, await checkRateLimit(auth.user.uid, 'search', 30, 3600))) return;
 
   const { query, type } = req.body || {};
   if (!query || typeof query !== 'string') return sendJson(res, 400, { error: 'Query wajib diisi.' });
