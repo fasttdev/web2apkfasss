@@ -1,9 +1,0 @@
-.auth-guard { position: fixed; inset: 0; z-index: 9999; display: none; place-items: center; padding: 20px; background: #090d18; text-align: center; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-html.auth-pending .auth-guard { display: grid; }
-html.auth-pending body > *:not(.auth-guard) { visibility: hidden; }
-html.auth-pending { overflow: hidden; }
-.auth-guard-inner { display: grid; place-items: center; gap: 14px; }
-.auth-guard-spinner { width: 28px; height: 28px; border: 2px solid rgba(117, 144, 255, .2); border-top-color: #7590ff; border-radius: 50%; animation: authGuardSpin .7s linear infinite; }
-.auth-guard-inner p { margin: 0; color: #8d9ab6; font-size: 11px; letter-spacing: .3px; line-height: 1.5; }
-@keyframes authGuardSpin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .auth-guard-spinner { animation-duration: 2s; } }
