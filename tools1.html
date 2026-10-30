@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090d18">
+  <title>Tools 1 — FastDev Web2APK</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <style>
+    .tools-hero { padding-bottom: 22px; }
+    .tools-hero h1 span { color: var(--cyan); }
+
+    .clay-card { margin-top: 20px; padding: 18px; border-radius: 24px; border: 1px solid rgba(160, 177, 219, .14); background: radial-gradient(ellipse at 20% 0%, rgba(117, 144, 255, .16), transparent 55%), linear-gradient(145deg, rgba(28, 38, 62, .96), rgba(15, 22, 38, .96)); box-shadow: 0 22px 45px rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .06), inset 0 -3px 10px rgba(0, 0, 0, .35); }
+    .clay-row { display: flex; align-items: center; gap: 12px; }
+    .clay-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; background: rgba(112, 137, 255, .12); color: #9eafff; box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 6px 16px rgba(92,95,231,.15); }
+    .clay-icon svg { width: 20px; height: 20px; }
+    .clay-row b { font-size: 13px; display: block; }
+    .clay-row small { color: var(--muted); font-size: 10px; }
+    .clay-divider { height: 1px; margin: 14px 0; background: rgba(160,177,219,.1); }
+    .clay-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+    .clay-stats b { display: block; font-size: 18px; letter-spacing: -.5px; }
+    .clay-stats small { color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
+
+    .tool-tabs-wrap { position: sticky; top: 0; z-index: 12; margin: 0 -16px 12px; padding: 10px 0 10px; background: rgba(9, 13, 24, .94); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid rgba(160, 177, 219, .06); }
+    .tool-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 2px 16px; scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+    .tool-tabs::-webkit-scrollbar { display: none; }
+    .tool-tab { display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto; height: 40px; padding: 0 14px; border: 1px solid var(--line); border-radius: 20px; background: rgba(20, 28, 47, .92); color: #8d9ab6; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: background .2s, border-color .2s, color .2s, transform .15s; scroll-snap-align: start; }
+    .tool-tab svg { width: 15px; height: 15px; flex: 0 0 auto; }
+    .tool-tab:hover { border-color: rgba(129, 151, 255, .4); color: #c5cee4; }
+    .tool-tab:active { transform: scale(.96); }
+    .tool-tab.active { background: linear-gradient(135deg, rgba(104, 126, 255, .28), rgba(134, 100, 245, .18)); border-color: rgba(129, 151, 255, .55); color: #dce3ff; box-shadow: 0 4px 14px rgba(92, 95, 231, .2); }
+    .tool-tab.active svg { color: #b8c5ff; }
+
+    .tool-panel { margin-top: 15px; }
+    .tool-panel .panel-heading { margin-bottom: 20px; }
+    .tool-form .field { margin-top: 0; }
+
+    .input-clear { display: grid; place-items: center; width: 24px; height: 24px; border: 0; border-radius: 8px; background: rgba(255,255,255,.04); color: var(--muted); cursor: pointer; flex: 0 0 auto; }
+    .input-clear svg { width: 13px; height: 13px; }
+
+    .tool-action { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; min-height: 48px; margin-top: 16px; border: 1px solid rgba(192,201,255,.23); border-radius: 14px; background: linear-gradient(110deg, #657fff, #795ce8 72%, #8b64e8); box-shadow: 0 12px 28px rgba(92,95,231,.22); color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: transform .2s, box-shadow .2s, opacity .2s; }
+    .tool-action:hover { box-shadow: 0 15px 35px rgba(92,95,231,.3); }
+    .tool-action:active { transform: scale(.99); }
+    .tool-action:disabled { opacity: .55; cursor: wait; }
+    .tool-action svg { width: 17px; height: 17px; }
+
+    .tool-state { display: grid; place-items: center; gap: 12px; padding: 28px 0; text-align: center; }
+    .tool-state p { margin: 0; color: var(--muted); font-size: 11px; }
+    .spinner { width: 26px; height: 26px; border: 2px solid rgba(117,144,255,.2); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .tool-alert { display: flex; align-items: flex-start; gap: 10px; margin-top: 15px; padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 110, 110, .18); background: rgba(255, 110, 110, .06); }
+    .tool-alert svg { flex: 0 0 auto; width: 16px; color: #ff8a8a; }
+    .tool-alert p { margin: 0; color: #ffb4b4; font-size: 11px; line-height: 1.6; }
+
+    .tool-result { margin-top: 18px; overflow: hidden; border-radius: 18px; border: 1px solid rgba(117, 144, 255, .2); background: rgba(7, 11, 21, .35); }
+    .result-media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #0b1120; }
+    .result-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .duration-chip { position: absolute; right: 10px; bottom: 10px; padding: 4px 8px; border-radius: 7px; background: rgba(4, 8, 16, .8); color: #e6ecff; font-size: 10px; font-weight: 700; backdrop-filter: blur(6px); }
+    .result-body { padding: 14px; display: grid; gap: 12px; }
+    .result-author { display: flex; align-items: center; gap: 10px; }
+    .result-author img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(160,177,219,.2); background: #1b243a; }
+    .result-author div { display: grid; gap: 2px; min-width: 0; }
+    .result-author b { font-size: 11px; }
+    .result-author small { color: var(--muted); font-size: 9px; }
+    .result-title { margin: 0; color: #cfd8ee; font-size: 11px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .result-stats { display: flex; flex-wrap: wrap; gap: 12px; }
+    .result-stats span { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 10px; }
+    .result-stats svg { width: 12px; height: 12px; }
+    .result-stats b { color: #cdd6ec; font-weight: 700; }
+
+    .download-actions { display: grid; gap: 8px; }
+    .download-btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; border-radius: 11px; background: linear-gradient(110deg, #667fff, #8563e9); color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; }
+    .download-btn:active { transform: scale(.99); }
+    .download-btn.secondary { background: rgba(117,144,255,.12); border: 1px solid rgba(117,144,255,.22); color: #c6d2ff; }
+    .download-btn.audio { background: rgba(117,144,255,.1); border: 1px solid rgba(117,144,255,.22); color: #c6d2ff; }
+    .download-btn svg { width: 15px; height: 15px; }
+    .download-btn.hidden { display: none; }
+
+    .ghost-btn { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: 38px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--muted); font-size: 10px; font-weight: 700; cursor: pointer; }
+    .ghost-btn svg { width: 13px; height: 13px; }
+
+    .uc-summary { padding: 14px; border-bottom: 1px solid var(--line); }
+    .uc-summary-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .uc-summary-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #131b2e; border: 1px solid var(--line); flex: 0 0 auto; }
+    .uc-summary-title { flex: 1; min-width: 0; }
+    .uc-summary-title b { display: block; font-size: 13px; color: #fff; word-break: break-word; line-height: 1.35; }
+    .uc-summary-title small { color: var(--muted); font-size: 10px; }
+    .uc-summary-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .uc-summary-stats div { text-align: center; }
+    .uc-summary-stats b { display: block; font-size: 14px; color: #fff; }
+    .uc-summary-stats small { color: var(--muted); font-size: 8.5px; text-transform: uppercase; letter-spacing: .4px; }
+    .uc-file-list { padding: 12px; display: grid; gap: 8px; max-height: 60vh; overflow-y: auto; }
+    .uc-file { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: rgba(7,11,21,.35); }
+    .uc-file-thumb { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; background: #131b2e; flex: 0 0 auto; display: grid; place-items: center; color: #6b7a99; border: 1px solid var(--line); }
+    .uc-file-thumb svg { width: 20px; height: 20px; }
+    .uc-file-info { flex: 1; min-width: 0; display: grid; gap: 3px; }
+    .uc-file-info b { font-size: 11px; color: #dbe3f6; word-break: break-word; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .uc-file-info small { color: var(--muted); font-size: 9px; }
+    .uc-file-btn { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(110deg, #667fff, #8563e9); color: #fff; text-decoration: none; flex: 0 0 auto; }
+    .uc-file-btn svg { width: 15px; height: 15px; }
+    .uc-file-btn.disabled { background: rgba(117,144,255,.08); color: var(--muted); pointer-events: none; }
+    .uc-empty { padding: 30px 14px; text-align: center; color: var(--muted); font-size: 11px; }
+
+    .yt-segmented, .ps-segmented, .gs-segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 16px; padding: 4px; border: 1px solid rgba(155, 170, 210, .1); border-radius: 13px; background: rgba(5, 9, 18, .45); }
+    .yt-seg-btn, .ps-seg-btn, .gs-seg-btn { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 39px; padding: 8px 5px; border: 1px solid transparent; border-radius: 10px; background: transparent; color: #8491ae; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .yt-seg-btn svg, .ps-seg-btn svg, .gs-seg-btn svg { width: 14px; height: 14px; }
+    .yt-seg-btn.active, .ps-seg-btn.active, .gs-seg-btn.active { border-color: rgba(143, 159, 255, .16); background: linear-gradient(135deg, rgba(104, 126, 255, .22), rgba(134, 100, 245, .13)); color: #dce3ff; }
+
+    .yt-list { display: grid; gap: 10px; margin-top: 16px; }
+    .yt-card { display: flex; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: rgba(7, 11, 21, .35); cursor: pointer; text-align: left; }
+    .yt-thumb { position: relative; width: 110px; height: 62px; flex: 0 0 auto; border-radius: 8px; overflow: hidden; background: #131b2e; }
+    .yt-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .yt-duration { position: absolute; bottom: 4px; right: 4px; padding: 1px 4px; border-radius: 4px; background: rgba(4, 8, 16, .8); color: #fff; font-size: 9px; font-weight: 700; }
+    .yt-info { min-width: 0; flex: 1; display: grid; align-content: start; gap: 2px; }
+    .yt-info b { font-size: 11px; line-height: 1.35; color: #dbe3f6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .yt-info small { color: var(--muted); font-size: 9px; }
+    .yt-info span { color: #8ee8c3; font-size: 8.5px; margin-top: 2px; }
+    .yt-detail { margin-top: 16px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: rgba(7, 11, 21, .35); }
+    .yt-header { position: relative; height: 160px; background-size: cover; background-position: center; }
+    .yt-header::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(7,11,21,1), transparent); }
+    .yt-head-content { padding: 16px; position: relative; z-index: 1; margin-top: -40px; }
+    .yt-head-content h3 { margin: 0 0 4px; font-size: 15px; color: #fff; line-height: 1.3; text-shadow: 0 2px 4px rgba(0,0,0,.5); }
+    .yt-head-content small { color: var(--blue); font-size: 10.5px; font-weight: 600; }
+    .yt-detail-body { padding: 16px; display: grid; gap: 16px; }
+    .yt-downloads { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .yt-dl-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; border-radius: 10px; background: rgba(117,144,255,.1); border: 1px solid rgba(117,144,255,.2); color: #c6d2ff; text-decoration: none; gap: 4px; }
+    .yt-dl-btn.primary { background: linear-gradient(110deg, #657fff, #795ce8); border: 0; color: #fff; }
+    .yt-dl-btn span { font-size: 10px; font-weight: 700; }
+    .yt-dl-btn small { font-size: 8px; opacity: .8; }
+    .yt-dl-btn.disabled { opacity: .4; pointer-events: none; }
+
+    .ps-grid { display: grid; gap: 10px; margin-top: 16px; }
+    .ps-card { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: rgba(7, 11, 21, .35); cursor: pointer; text-align: left; }
+    .ps-card-icon { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; flex: 0 0 auto; background: #131b2e; }
+    .ps-card-body { flex: 1; min-width: 0; display: grid; gap: 4px; }
+    .ps-card-body b { font-size: 12.5px; color: #dbe3f6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ps-card-body small { color: var(--muted); font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ps-card-stats { display: flex; gap: 8px; margin-top: 2px; font-size: 9px; color: #8ee8c3; font-weight: 700; }
+    .ps-card-stats span { display: flex; align-items: center; gap: 3px; }
+    .ps-card-stats svg { width: 10px; height: 10px; }
+    .ps-detail-card { margin-top: 16px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: rgba(7, 11, 21, .35); }
+    .ps-header { position: relative; height: 120px; background-size: cover; background-position: center; }
+    .ps-header::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(7,11,21,1), transparent); }
+    .ps-head-content { position: relative; z-index: 1; display: flex; gap: 12px; padding: 0 16px; margin-top: -30px; }
+    .ps-detail-icon { width: 72px; height: 72px; border-radius: 16px; border: 2px solid rgba(255,255,255,.1); background: #131b2e; object-fit: cover; }
+    .ps-head-info { display: grid; gap: 3px; padding-bottom: 8px; }
+    .ps-head-info h3 { margin: 0; font-size: 15px; color: #fff; line-height: 1.3; }
+    .ps-head-info small { color: var(--blue); font-size: 11px; font-weight: 600; }
+    .ps-detail-body { padding: 16px; display: grid; gap: 16px; }
+    .ps-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 12px 0; }
+    .ps-stat { text-align: center; border-right: 1px solid var(--line); }
+    .ps-stat:last-child { border-right: none; }
+    .ps-stat b { display: block; font-size: 12px; color: #dbe3f6; }
+    .ps-stat small { color: var(--muted); font-size: 8.5px; text-transform: uppercase; }
+    .ps-desc { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.7; white-space: pre-wrap; display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical; overflow: hidden; }
+    .ps-links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .ps-links a { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 38px; border-radius: 10px; background: rgba(117,144,255,.1); border: 1px solid rgba(117,144,255,.2); color: #c6d2ff; font-size: 10px; font-weight: 700; text-decoration: none; }
+    .ps-links a.primary { grid-column: 1 / -1; background: linear-gradient(110deg, #657fff, #795ce8); border: 0; color: #fff; }
+
+    .gs-list { display: grid; gap: 10px; margin-top: 16px; }
+    .gs-item { padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: rgba(7, 11, 21, .35); }
+    .gs-item a { color: #9eafff; font-size: 13px; font-weight: 600; text-decoration: none; display: block; margin-bottom: 4px; }
+    .gs-item small { color: #8ee8c3; font-size: 10px; word-break: break-all; display: block; margin-bottom: 6px; }
+    .gs-item p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .gs-img-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 16px; }
+    .gs-img { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); cursor: pointer; background: #131b2e; }
+
+    .pin-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 16px; }
+    .pin-card { position: relative; display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: 14px; background: #0b1120; overflow: hidden; cursor: pointer; text-align: left; color: inherit; }
+    .pin-card-thumb { position: relative; aspect-ratio: 3 / 4; overflow: hidden; background: #131b2e; }
+    .pin-card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pin-card-type { position: absolute; top: 7px; left: 7px; display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px; border-radius: 6px; background: rgba(4, 8, 16, .78); color: #e6ecff; font-size: 8px; font-weight: 800; backdrop-filter: blur(6px); }
+    .pin-card-type svg { width: 10px; height: 10px; }
+    .pin-card-meta { padding: 8px 9px 10px; display: grid; gap: 3px; }
+    .pin-card-meta b { font-size: 9.5px; line-height: 1.4; color: #cfd8ee; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .pin-card-meta small { color: var(--muted); font-size: 8.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pin-empty { grid-column: 1 / -1; padding: 30px 14px; text-align: center; color: var(--muted); font-size: 11px; border: 1px dashed var(--line); border-radius: 14px; }
+    .pin-preview { margin-top: 16px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: rgba(7, 11, 21, .35); }
+    .pin-preview-media { position: relative; max-height: 62vh; background: #050810; display: grid; place-items: center; overflow: hidden; }
+    .pin-preview-media img, .pin-preview-media video { display: block; width: 100%; height: auto; max-height: 62vh; object-fit: contain; background: #050810; }
+    .pin-preview-badge { position: absolute; top: 10px; left: 10px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; background: rgba(4, 8, 16, .78); color: #e6ecff; font-size: 8.5px; font-weight: 800; backdrop-filter: blur(6px); }
+    .pin-preview-badge svg { width: 10px; height: 10px; }
+    .pin-preview-body { padding: 14px; display: grid; gap: 11px; }
+    .pin-preview-title { margin: 0; color: #dbe3f6; font-size: 12px; font-weight: 700; }
+    .pin-preview-desc { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.65; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .pin-preview-meta { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pin-preview-meta span { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 9.5px; }
+    .pin-preview-meta svg { width: 11px; height: 11px; }
+
+    .hm-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 16px; }
+    .hm-card { position: relative; display: flex; align-items: center; gap: 10px; padding: 11px; border: 1px solid var(--line); border-radius: 14px; background: rgba(7, 11, 21, .35); text-align: left; cursor: pointer; color: inherit; }
+    .hm-card-icon { width: 44px; height: 44px; border-radius: 11px; background: #131b2e; flex: 0 0 auto; overflow: hidden; border: 1px solid var(--line); }
+    .hm-card-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hm-card-body { min-width: 0; flex: 1; display: grid; gap: 3px; }
+    .hm-card-body b { font-size: 10.5px; line-height: 1.35; color: #dbe3f6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .hm-card-body small { color: var(--muted); font-size: 9px; display: flex; align-items: center; gap: 3px; }
+    .hm-card-body small svg { width: 10px; height: 10px; }
+    .hm-detail { margin-top: 16px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: rgba(7, 11, 21, .35); }
+    .hm-detail-head { display: flex; align-items: flex-start; gap: 12px; padding: 14px; border-bottom: 1px solid var(--line); }
+    .hm-detail-icon { width: 64px; height: 64px; border-radius: 15px; background: #131b2e; overflow: hidden; flex: 0 0 auto; border: 1px solid var(--line); }
+    .hm-detail-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hm-detail-meta { min-width: 0; flex: 1; display: grid; gap: 4px; }
+    .hm-detail-meta h3 { margin: 0; font-size: 13px; line-height: 1.35; color: #dbe3f6; word-break: break-word; }
+    .hm-detail-meta small { color: var(--muted); font-size: 9.5px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+    .hm-detail-meta small svg { width: 10px; height: 10px; }
+    .hm-detail-body { padding: 14px; display: grid; gap: 12px; }
+    .hm-section-label { color: #c5cee4; font-size: 10px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .hm-section-label svg { width: 12px; height: 12px; color: var(--blue); }
+    .hm-downloads { display: grid; gap: 8px; }
+    .hm-download-btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 10px 12px; border-radius: 11px; background: linear-gradient(110deg, #667fff, #8563e9); color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; border: 0; cursor: pointer; }
+    .hm-download-btn.secondary { background: rgba(117,144,255,.12); border: 1px solid rgba(117,144,255,.22); color: #c6d2ff; }
+    .hm-download-btn svg { width: 15px; height: 15px; flex: 0 0 auto; }
+    .hm-note { padding: 10px 11px; border-radius: 10px; border: 1px solid rgba(117,144,255,.14); background: rgba(117,144,255,.05); color: #9baedf; font-size: 9.5px; line-height: 1.6; }
+    .hm-note b { color: #b9c7ff; }
+
+    .history-list { display: grid; gap: 8px; }
+    .history-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: rgba(7, 11, 21, .35); cursor: pointer; text-align: left; }
+    .history-item img { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; flex: 0 0 auto; background: #131b2e; }
+    .history-item div { flex: 1; min-width: 0; display: grid; gap: 2px; }
+    .history-item b { font-size: 10.5px; color: #dbe3f6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .history-item small { font-size: 9px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .history-item svg { width: 14px; height: 14px; color: var(--muted); flex: 0 0 auto; }
+
+    @media (max-width: 380px) {
+      .clay-stats b { font-size: 16px; }
+      .tool-tab { height: 36px; padding: 0 12px; font-size: 10px; }
+      .tool-tab svg { width: 13px; height: 13px; }
+      .pin-grid, .hm-grid, .gs-img-grid { gap: 7px; }
+      .ps-links { grid-template-columns: 1fr; }
+      .yt-downloads { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <main class="app">
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <span class="brand-icon"><i data-lucide="layers"></i></span>
+        <span class="brand-copy"><strong>Web2APK</strong><small>BY FASTDEV</small></span>
+      </a>
+      <button class="icon-button" id="helpBtn" type="button" aria-label="Bantuan"><i data-lucide="circle-help"></i></button>
+    </header>
+
+    <section class="hero tools-hero">
+      <div class="hero-label"><span class="live-dot"></span> TOOLS 1 · DOWNLOADER & SEARCH</div>
+      <h1>Download <span>& cari.</span></h1>
+      <p>Downloader populer dan mesin pencari. Gratis, tanpa login.</p>
+      <div class="clay-card">
+        <div class="clay-row">
+          <span class="clay-icon"><i data-lucide="download"></i></span>
+          <div><b>7 tools tersedia</b><small>TikTok · Pinterest · HappyMod · YouTube · UC Drive · Google · Play Store</small></div>
+        </div>
+        <div class="clay-divider"></div>
+        <div class="clay-stats">
+          <div><b>7</b><small>Aktif</small></div>
+          <div><b>2</b><small>Mode</small></div>
+          <div><b>∞</b><small>Gratis</small></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-heading">
+      <div><span class="eyebrow">DOWNLOADER & SEARCH</span><h2>Pilih tool</h2></div>
+      <span class="version-chip"><span class="live-dot"></span> 7 AKTIF</span>
+    </div>
+
+    <div class="tool-tabs-wrap">
+      <div class="tool-tabs" id="toolTabs" role="tablist">
+        <button class="tool-tab active" data-tool="tiktok" type="button"><i data-lucide="music-2"></i><span>TikTok</span></button>
+        <button class="tool-tab" data-tool="pinterest" type="button"><i data-lucide="image"></i><span>Pinterest</span></button>
+        <button class="tool-tab" data-tool="happymod" type="button"><i data-lucide="package"></i><span>HappyMod</span></button>
+        <button class="tool-tab" data-tool="youtube" type="button"><i data-lucide="youtube"></i><span>YouTube</span></button>
+        <button class="tool-tab" data-tool="uc" type="button"><i data-lucide="hard-drive"></i><span>UC Drive</span></button>
+        <button class="tool-tab" data-tool="google" type="button"><i data-lucide="search"></i><span>Google</span></button>
+        <button class="tool-tab" data-tool="playstore" type="button"><i data-lucide="play-circle"></i><span>Play Store</span></button>
+      </div>
+    </div>
+
+    <!-- TIKTOK -->
+    <section class="panel tool-panel" id="panel-tiktok" role="tabpanel">
+      <div class="panel-heading">
+        <span class="section-icon"><i data-lucide="music-2"></i></span>
+        <div><h3>TikTok Downloader</h3><p>Tempel link TikTok, ambil video tanpa watermark.</p></div>
+      </div>
+      <form id="tiktokForm" class="tool-form" novalidate>
+        <div class="field">
+          <label for="tiktokUrl">Link TikTok</label>
+          <div class="input-wrap">
+            <i data-lucide="link"></i>
+            <input id="tiktokUrl" type="url" placeholder="https://www.tiktok.com/@user/video/..." inputmode="url" required>
+            <button class="input-clear hidden" id="clearUrl" type="button"><i data-lucide="x"></i></button>
+            <button class="input-clear" id="pasteUrl" type="button"><i data-lucide="clipboard-paste"></i></button>
+          </div>
+        </div>
+        <button class="tool-action" id="tiktokSubmit" type="submit"><i data-lucide="download"></i><span>Ambil video</span></button>
+      </form>
+      <div class="tool-state hidden" id="tiktokLoading"><span class="spinner"></span><p>Mengambil data dari TikTok…</p></div>
+      <div class="tool-alert hidden" id="tiktokError"><i data-lucide="alert-circle"></i><p id="tiktokErrorText">Terjadi kesalahan.</p></div>
+      <div class="tool-result hidden" id="tiktokResult">
+        <div class="result-media"><img id="ttCover" alt="Cover" loading="lazy" referrerpolicy="no-referrer"><span class="duration-chip" id="ttDuration">0:00</span></div>
+        <div class="result-body">
+          <div class="result-author"><img id="ttAvatar" alt="Avatar" loading="lazy" referrerpolicy="no-referrer"><div><b id="ttNickname">@user</b><small id="ttUsername">@user</small></div></div>
+          <p class="result-title" id="ttTitle">Judul</p>
+          <div class="result-stats">
+            <span><i data-lucide="play"></i><b id="ttPlays">0</b></span>
+            <span><i data-lucide="heart"></i><b id="ttLikes">0</b></span>
+            <span><i data-lucide="message-circle"></i><b id="ttComments">0</b></span>
+            <span><i data-lucide="share-2"></i><b id="ttShares">0</b></span>
+          </div>
+          <div class="download-actions">
+            <a class="download-btn" id="ttDownloadHd" href="#" download target="_blank" rel="noopener noreferrer"><i data-lucide="download"></i> HD Video</a>
+            <a class="download-btn secondary" id="ttDownloadSd" href="#" download target="_blank" rel="noopener noreferrer"><i data-lucide="download"></i> SD Video</a>
+            <a class="download-btn audio" id="ttDownloadAudio" href="#" download target="_blank" rel="noopener noreferrer"><i data-lucide="music"></i> Audio</a>
+          </div>
+          <button class="ghost-btn" id="ttReset" type="button"><i data-lucide="rotate-ccw"></i> Coba link lain</button>
+        </div>
+      </div>
+      <div class="field hidden" id="historyField" style="margin-top:20px;">
+        <label style="display:block;margin-bottom:9px;color:#c5cee4;font-size:11px;font-weight:700;">Terakhir diambil</label>
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </section>
+
+    <!-- PINTEREST -->
+    <section class="panel tool-panel hidden" id="panel-pinterest" role="tabpanel">
+      <div class="panel-heading">
+        <span class="section-icon"><i data-lucide="image"></i></span>
+        <div><h3>Pinterest Search &amp; DL</h3><p>Cari inspirasi atau unduh dari URL pin.</p></div>
+      </div>
+      <div class="segmented" style="margin-bottom:16px;">
+        <button type="button" class="seg-btn active" data-pinmode="search"><i data-lucide="search"></i> Cari</button>
+        <button type="button" class="seg-btn" data-pinmode="download"><i data-lucide="download"></i> Unduh</button>
+      </div>
+      <form id="pinSearchForm" class="tool-form" novalidate>
+        <div class="field">
+          <label for="pinQuery">Kata kunci</label>
+          <div class="input-wrap"><i data-lucide="search"></i><input id="pinQuery" type="text" placeholder="Contoh: aesthetic wallpaper"><button class="input-clear hidden" id="pinQueryClear" type="button"><i data-lucide="x"></i></button></div>
+        </div>
+        <button class="tool-action" id="pinSearchSubmit" type="submit"><i data-lucide="search"></i><span>Cari</span></button>
+      </form>
+      <form id="pinDownloadForm" class="tool-form hidden" novalidate>
+        <div class="field">
+          <label for="pinUrl">URL Pinterest</label>
+          <div class="input-wrap"><i data-lucide="link"></i><input id="pinUrl" type="url" placeholder="https://pin.it/... atau pinterest.com/pin/..." inputmode="url"><button class="input-clear hidden" id="pinUrlClear" type="button"><i data-lucide="x"></i></button></div>
+        </div>
+        <button class="tool-action" id="pinDownloadSubmit" type="submit"><i data-lucide="download"></i><span>Ambil media</span></button>
+      </form>
+      <div class="tool-state hidden" id="pinLoading"><span class="spinner"></span><p id="pinLoadingText">Memproses…</p></div>
+      <div class="tool-alert hidden" id="pinError"><i data-lucide="alert-circle"></i><p id="pinErrorText">Terjadi kesalahan.</p></div>
+      <div class="pin-grid hidden" id="pinResults"></div>
+      <div class="pin-preview hidden" id="pinPreview">
+        <div class="pin-preview-media" id="pinPreviewMedia"></div>
+        <div class="pin-preview-body">
+          <h3 class="pin-preview-title" id="pinPreviewTitle">-</h3>
+          <p class="pin-preview-desc hidden" id="pinPreviewDesc"></p>
+          <div class="pin-preview-meta" id="pinPreviewMeta"></div>
+          <div class="download-actions">
+            <a class="download-btn" id="pinDownloadPrimary" href="#" download target="_blank" rel="noopener noreferrer"><i data-lucide="download"></i> Unduh media</a>
+            <a class="download-btn secondary hidden" id="pinDownloadAlt" href="#" download target="_blank" rel="noopener noreferrer"><i data-lucide="download"></i> Unduh alternatif</a>
+            <a class="download-btn secondary hidden" id="pinOpenSource" href="#" target="_blank" rel="noopener noreferrer"><i data-lucide="external-link"></i> Buka di Pinterest</a>
+          </div>
+          <button class="ghost-btn" id="pinBack" type="button"><i data-lucide="arrow-left"></i> Kembali</button>
+        </div>
+      </div>
+      <div class="field hidden" id="pinHistoryField" style="margin-top:20px;">
+        <label style="display:block;margin-bottom:9px;color:#c5cee4;font-size:11px;font-weight:700;">Terakhir diunduh</label>
+        <div class="history-list" id="pinHistoryList"></div>
+      </div>
+    </section>
+
+    <!-- HAPPYMOD -->
+    <section class="panel tool-panel hidden" id="panel-happymod" role="tabpanel">
+      <div class="panel-heading">
+        <span class="section-icon"><i data-lucide="package"></i></span>
+        <div><h3>HappyMod Search &amp; DL</h3><p>Cari aplikasi MOD atau unduh via URL.</p></div>
+      </div>
+      <div class="segmented" style="margin-bottom:16px;">
+        <button type="button" class="seg-btn active" data-hmmode="search"><i data-lucide="search"></i> Cari</button>
+        <button type="button" class="seg-btn" data-hmmode="download"><i data-lucide="link"></i> URL</button>
+      </div>
+      <form id="hmSearchForm" class="tool-form" novalidate>
+        <div class="field">
+          <label for="hmQuery">Nama aplikasi</label>
+          <div class="input-wrap"><i data-lucide="search"></i><input id="hmQuery" type="text" placeholder="Contoh: spotify mod"><button class="input-clear hidden" id="hmQueryClear" type="button"><i data-lucide="x"></i></button></div>
+        </div>
+        <button class="tool-action" id="hmSearchSubmit" type="submit"><i data-lucide="search"></i><span>Cari aplikasi</span></button>
+      </form>
+      <form id="hmDownloadForm" class="tool-form hidden" novalidate>
+        <div class="field">
+          <label for="hmUrl">URL HappyMod</label>
+          <div class="input-wrap"><i data-lucide="link"></i><input id="hmUrl" type="url" placeholder="https://happymod.to/..." inputmode="url"><button class="input-clear hidden" id="hmUrlClear" type="button"><i data-lucide="x"></i></button></div>
+        </div>
+        <button class="tool-action" id="hmDownloadSubmit" type="submit"><i data-lucide="download"></i><span>Ambil info</span></button>
+      </form>
+      <div class="tool-state hidden" id="hmLoading"><span class="spinner"></span><p id="hmLoadingText">Memproses…</p></div>
+      <div class="tool-alert hidden" id="hmError"><i data-lucide="alert-circle"></i><p id="hmErrorText">Terjadi kesalahan.</p></div>
+      <div class="hm-grid hidden" id="hmResults"></div>
+      <div class="hm-detail hidden" id="hmDetail"></div>
+      <div class="field hidden" id="hmHistoryField" style="margin-top:20px;">
+        <label style="display:block;margin-bottom:9px;color:#c5cee4;font-size:11px;font-weight:700;">Terakhir diambil</label>
+        <div class="history-list" id="hmHistoryList"></div>
+      </div>
+    </section>
+
+    <!-- YOUTUBE -->
+    <section class="panel tool-panel hidden" id="panel-youtube" role="tabpanel">
+      <div class="panel-heading">
+        <span class="section-icon"><i data-lucide="youtube"></i></span>
+        <div><h3>YouTube Downloader</h3><p>Cari video atau unduh via link YouTube.</p></div>
+      </div>
+      <div class="yt-segmented">
+        <button type="button" class="yt-seg-btn active" data-ytmode="search"><i data-lucide="search"></i> Cari Video</button>
+        <button type="button" class="yt-seg-btn" data-ytmode="download"><i data-lucide="link"></i> URL Video</button>
+      </div>
+      <form id="ytSearchForm" class="tool-form" novalidate>
+        <div class="field">
+          <label for="ytQuery">Kata Kunci</label>
+          <div class="input-wrap"><i data-lucide="search"></i><input id="ytQuery" type="text" placeholder="Contoh: Lofi hip hop" required><button class="input-clear hidden" id="ytQueryClear" type="button"><i data-lucide="x"></i></button></div>
+        </div>
+        <button class="tool-action" id="ytSearchSubmit" type="submit"><i data-lucide="search"></i><span>Cari Video</span></button>
+      </form>
+      <form id="ytDownloadForm" class="tool-form hidden" novalidate>
+        <div class="field">
+          <label for="ytUrl">Link YouTube</label>
+          <div class="input-wrap"><i data-lucide="link"></i><input id="ytUrl" type="url" placeholder="https://youtube.com/watch?v=..." required><button class="input-clear hidden" id="ytUrlClear" type="button"><i data-lucide="x"></i></button></div>
+        </div>
+        <button class="tool-action" id="ytDownloadSubmit" type="submit"><i data-lucide="download"></i><span>Ambil Link Download</span></button>
+      </form>
+      <div class="tool-state hidden" id="ytLoading"><span class="spinner"></span><p id="ytLoadingText">Memproses…</p></div>
+      <div class="tool-alert hidden" id="ytError"><i data-lucide="alert-circle"></i><p id="ytErrorText">Terjadi kesalahan.</p></div>
+      <div class="yt-list hidden" id="ytResults"></div>
+      <div class="yt-detail hidden" id="ytDetailCard"></div>
+    </section>
+
+    <!-- UC DRIVE -->
+    <section class="panel tool-panel hidden" id="panel-uc" role="tabpanel">
+      <div class="panel-heading">
+        <span class="section-icon"><i data-lucide="hard-drive"></i></span>
+        <div><h3>UC Drive Downloader</h3><p>Ambil file dari UC Drive Share link.</p></div>
+      </div>
+      <form id="ucForm" class="tool-form" novalidate>
+        <div class="field">
+          <label for="ucUrl">Link UC Drive</label>
+          <div class="input-wrap"><i data-lucide="link"></i><input id="ucUrl" type="url" placeholder="https://drive.ucweb.com/s/..." inputmode="url" required><button class="input-clear hidden" id="ucUrlClear" type="button"><i data-lucide="x"></i></button></div>
+        </div>
+        <div class="field">
+          <label for="ucPasscode">Passcode <span class="optional">OPSIONAL</span></label>
+          <div class="input-wrap"><i data-lucide="key-round"></i><input id="ucPasscode" type="text" placeholder="Kosongkan jika tidak ada" maxlength="32"></div>
+        </div>
+        <button class="tool-action" id="ucSubmit" type="submit"><i data-lucide="download"></i><span>Ambil Data</span></button>
+      </form>
+      <div class="tool-state hidden" id="ucLoading"><span class="spinner"></span><p>Mengambil data dari UC Drive…</p></div>
+      <div class="tool-alert hidden" id="ucError"><i data-lucide="alert-circle"></i><p id="ucErrorText">Terjadi kesalahan.</p></div>
+      <div class="hidden" id="ucResult"></div>
+    </section>
+
+    <!-- GOOGLE -->
+    <section class="panel tool-panel hidden" id="panel-google" role="tabpanel">
+      <div class="panel-heading">
+        <span class="section-icon"><i data-lucide="search"></i></span>
+        <div><h3>Google Search</h3><p>Cari informasi atau gambar dari web.</p></div>
+      </div>
+      <div class="gs-segmented">
+        <button type="button" class="gs-seg-btn active" data-gsmode="text"><i data-lucide="globe"></i> Web</button>
+        <button type="button" class="gs-seg-btn" data-gsmode="image"><i data-lucide="image"></i> Gambar</button>
+      </div>
+      <form id="gsForm" class="tool-form" novalidate>
+        <div class="field">
+          <label for="gsQuery">Kata Kunci</label>
+          <div class="input-wrap"><i data-lucide="search"></i><input id="gsQuery" type="text" placeholder="Contoh: Resep nasi goreng" required><button class="input-clear hidden" id="gsQueryClear" type="button"><i data-lucide="x"></i></button></div>
+        </div>
+        <button class="tool-action" id="gsSubmit" type="submit"><i data-lucide="search"></i><span>Cari Sekarang</span></button>
+      </form>
+      <div class="tool-state hidden" id="gsLoading"><span class="spinner"></span><p id="gsLoadingText">Mencari…</p></div>
+      <div class="tool-alert hidden" id="gsError"><i data-lucide="alert-circle"></i><p id="gsErrorText">Terjadi kesalahan.</p></div>
+      <div class="gs-list hidden" id="gsTextResults"></div>
+      <div class="gs-img-grid hidden" id="gsImageResults"></div>
+    </section>
+
+    <!-- PLAY STORE -->
+    <section class="panel tool-panel hidden" id="panel-playstore" role="tabpanel">
+      <div class="panel-heading">
+        <span class="section-icon"><i data-lucide="play-circle"></i></span>
+        <div><h3>Play Store Scraper</h3><p>Cari dan lihat detail aplikasi Google Play.</p></div>
+      </div>
+      <div class="ps-segmented">
+        <button type="button" class="ps-seg-btn active" data-psmode="search"><i data-lucide="search"></i> Cari</button>
+        <button type="button" class="ps-seg-btn" data-psmode="detail"><i data-lucide="link"></i> Detail URL</button>
+      </div>
+      <form id="psSearchForm" class="tool-form" novalidate>
+        <div class="field">
+          <label for="psQuery">Nama Aplikasi</label>
+          <div class="input-wrap"><i data-lucide="search"></i><input id="psQuery" type="text" placeholder="Contoh: WhatsApp"><button class="input-clear hidden" id="psQueryClear" type="button"><i data-lucide="x"></i></button></div>
+        </div>
+        <button class="tool-action" id="psSearchSubmit" type="submit"><i data-lucide="search"></i><span>Cari Aplikasi</span></button>
+      </form>
+      <form id="psDetailForm" class="tool-form hidden" novalidate>
+        <div class="field">
+          <label for="psAppId">App ID atau URL Play Store</label>
+          <div class="input-wrap"><i data-lucide="link"></i><input id="psAppId" type="text" placeholder="com.whatsapp atau link"><button class="input-clear hidden" id="psAppIdClear" type="button"><i data-lucide="x"></i></button></div>
+        </div>
+        <button class="tool-action" id="psDetailSubmit" type="submit"><i data-lucide="file-search"></i><span>Lihat Detail</span></button>
+      </form>
+      <div class="tool-state hidden" id="psLoading"><span class="spinner"></span><p id="psLoadingText">Memproses…</p></div>
+      <div class="tool-alert hidden" id="psError"><i data-lucide="alert-circle"></i><p id="psErrorText">Terjadi kesalahan.</p></div>
+      <div class="ps-grid hidden" id="psResults"></div>
+      <div class="ps-detail-card hidden" id="psDetailCard"></div>
+    </section>
+
+    <footer class="footer">
+      <span class="footer-mark"><i data-lucide="layers"></i></span>
+      <p><b>FASTDEV</b> · Web2APK Tools 1</p>
+      <small>Made for your next idea.</small>
+    </footer>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navigasi utama">
+    <a href="index.html" class="nav-item"><i data-lucide="hammer"></i><span>Build</span></a>
+    <a href="tools1.html" class="nav-item active" aria-current="page"><i data-lucide="wrench"></i><span>Tools 1</span></a>
+    <a href="tools2.html" class="nav-item"><i data-lucide="package"></i><span>Tools 2</span></a>
+    <a href="search-tools.html" class="nav-item"><i data-lucide="search"></i><span>Cari</span></a>
+    <a href="info.html" class="nav-item"><i data-lucide="info"></i><span>Info</span></a>
+  </nav>
+
+  <div class="modal-backdrop hidden" id="helpModal">
+    <section class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="closeHelp" type="button"><i data-lucide="x"></i></button>
+      <span class="section-icon"><i data-lucide="circle-help"></i></span>
+      <h3>Bantuan Tools 1</h3>
+      <p><b>TikTok:</b> tempel link video untuk versi tanpa watermark.</p>
+      <p><b>Pinterest:</b> mode Cari untuk eksplorasi, mode Unduh untuk pin URL.</p>
+      <p><b>HappyMod:</b> mode Cari untuk katalog MOD, mode URL untuk detail app.</p>
+      <p><b>YouTube:</b> Cari video atau paste URL YouTube untuk link download.</p>
+      <p><b>UC Drive:</b> Paste link UC Share, isi passcode jika perlu.</p>
+      <p><b>Google:</b> Cari informasi web atau gambar.</p>
+      <p><b>Play Store:</b> Cari aplikasi atau paste link Play Store.</p>
+      <button class="tool-action" id="closeHelpBottom" type="button">Mengerti</button>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="tools-common.js"></script>
+</body>
+</html>
