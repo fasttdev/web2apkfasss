@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#090d18">
-  <title>Cari Tools — FastDev Web2APK</title>
+  <title>Cari Tools — Opsidev</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -59,7 +59,7 @@
     <header class="topbar">
       <a class="brand" href="index.html">
         <span class="brand-icon"><i data-lucide="layers"></i></span>
-        <span class="brand-copy"><strong>Web2APK</strong><small>BY FASTDEV</small></span>
+        <span class="brand-copy"><strong>Opsidev</strong><small>WEBSITE UNTUK SEMUA</small></span>
       </a>
       <button class="icon-button" id="helpBtn" type="button" aria-label="Bantuan"><i data-lucide="circle-help"></i></button>
     </header>
@@ -82,7 +82,7 @@
 
     <footer class="footer">
       <span class="footer-mark"><i data-lucide="layers"></i></span>
-      <p><b>FASTDEV</b> · Web2APK Search</p>
+      <p><b>OPSIDEV</b> · Search</p>
       <small>Made for your next idea.</small>
     </footer>
   </main>
@@ -99,7 +99,7 @@
     <section class="modal" role="dialog" aria-modal="true">
       <button class="modal-close" id="closeHelp" type="button"><i data-lucide="x"></i></button>
       <span class="section-icon"><i data-lucide="circle-help"></i></span>
-      <h3>Bantuan Pencarian</h3>
+      <h3>Bantuan Opsidev</h3>
       <p>Ketik nama tool yang kamu butuhkan. Hasil menunjukkan tool tersebut ada di Tools 1 atau Tools 2.</p>
       <button class="primary-button" id="closeHelpBottom" type="button">Mengerti</button>
     </section>
@@ -112,7 +112,6 @@
     'use strict';
 
     const TOOLS = [
-      // Tools 1 — Downloader + Search
       { id: 'tiktok',    name: 'TikTok Downloader', desc: 'Ambil video TikTok tanpa watermark',     icon: 'music-2',      page: 'tools1.html', pageLabel: 'Tools 1', category: 'Downloader', keywords: 'tik tok video download mp4 no wm' },
       { id: 'pinterest', name: 'Pinterest',         desc: 'Cari & unduh gambar/video Pinterest',    icon: 'image',        page: 'tools1.html', pageLabel: 'Tools 1', category: 'Downloader', keywords: 'pin gambar video aesthetic wallpaper' },
       { id: 'happymod',  name: 'HappyMod',          desc: 'Cari aplikasi MOD dan APK',              icon: 'package',      page: 'tools1.html', pageLabel: 'Tools 1', category: 'Downloader', keywords: 'apk mod aplikasi android game' },
@@ -121,7 +120,6 @@
       { id: 'google',    name: 'Google Search',     desc: 'Pencarian web & gambar',                 icon: 'search',       page: 'tools1.html', pageLabel: 'Tools 1', category: 'Search',     keywords: 'search cari bing web gambar image' },
       { id: 'playstore', name: 'Play Store Scraper',desc: 'Cari aplikasi + info detail',            icon: 'play-circle',  page: 'tools1.html', pageLabel: 'Tools 1', category: 'Search',     keywords: 'playstore google play apk aplikasi app' },
 
-      // Tools 2 — Utility + AI
       { id: 'clone',     name: 'Clone Website',     desc: 'Clone HTML/CSS/JS jadi ZIP',             icon: 'copy',         page: 'tools2.html', pageLabel: 'Tools 2', category: 'Utility',    keywords: 'clone website html css js zip mirror' },
       { id: 'imgbb',     name: 'ImgBB Uploader',    desc: 'Upload gambar dengan masa aktif custom', icon: 'upload-cloud', page: 'tools2.html', pageLabel: 'Tools 2', category: 'Utility',    keywords: 'imgbb upload image gambar host' },
       { id: 'converter', name: 'File Converter',    desc: 'Konversi file ke format lain',           icon: 'file-audio',   page: 'tools2.html', pageLabel: 'Tools 2', category: 'Utility',    keywords: 'convert konversi file format mp3 mp4 pdf video audio gambar' },
@@ -156,8 +154,7 @@
       return s;
     }
 
-    function renderCard(tool, query) {
-      const pageLabel = tool.pageLabel;
+    function renderCard(tool) {
       const url = tool.page + '#' + tool.id;
       return (
         '<a class="search-card" href="' + escapeHtml(url) + '">' +
@@ -165,7 +162,7 @@
           '<div class="search-card-body">' +
             '<b>' + escapeHtml(tool.name) + '</b>' +
             '<small>' + escapeHtml(tool.desc) + '</small>' +
-            '<span class="search-card-badge">' + escapeHtml(pageLabel) + ' · ' + escapeHtml(tool.category) + '</span>' +
+            '<span class="search-card-badge">' + escapeHtml(tool.pageLabel) + ' · ' + escapeHtml(tool.category) + '</span>' +
           '</div>' +
           '<div class="search-card-arrow"><i data-lucide="arrow-up-right"></i></div>' +
         '</a>'
@@ -201,7 +198,7 @@
       }
 
       meta.innerHTML = '<b>' + scored.length + '</b> hasil untuk "' + escapeHtml(q) + '"';
-      results.innerHTML = '<div class="search-list">' + scored.map(x => renderCard(x.t, q)).join('') + '</div>';
+      results.innerHTML = '<div class="search-list">' + scored.map(x => renderCard(x.t)).join('') + '</div>';
       if (window.lucide) window.lucide.createIcons();
     }
 
@@ -220,7 +217,6 @@
       render('');
     });
 
-    // Keyboard shortcut: Enter → buka hasil pertama
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const first = results.querySelector('a.search-card');
@@ -236,7 +232,6 @@
     helpModal?.addEventListener('click', (e) => { if (e.target === helpModal) closeHelp(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && helpModal && !helpModal.classList.contains('hidden')) closeHelp(); });
 
-    // Init
     render('');
     if (window.lucide) window.lucide.createIcons();
   })();
