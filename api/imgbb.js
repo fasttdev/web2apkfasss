@@ -1,7 +1,4 @@
-// api/imgbb.js
-import { requireUser } from './_auth.js';
 import { sendJson, errorMessage } from './_lib.js';
-import { checkRateLimit, rateLimitMiddleware } from './_rate-limit.js';
 import { isHttpUrl } from './_validate.js';
 
 const EXPIRATION_MAP = {
@@ -19,12 +16,6 @@ function normalizeExpiration(exp) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method not allowed' });
-
-  let auth;
-  try { auth = await requireUser(req); }
-  catch (err) { return sendJson(res, err.status || 401, { status: false, error: err.message }); }
-
-  if (await rateLimitMiddleware(res, await checkRateLimit(auth.user.uid, 'imgbb', 20, 3600))) return;
 
   const { type, source, expiration } = req.body || {};
   if (!type || !source) return sendJson(res, 400, { status: false, error: 'Type dan source wajib diisi.' });
