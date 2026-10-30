@@ -1,8 +1,5 @@
-// api/playstore.js
 import gplayModule from 'google-play-scraper';
-import { requireUser } from './_auth.js';
 import { sendJson, errorMessage } from './_lib.js';
-import { checkRateLimit, rateLimitMiddleware } from './_rate-limit.js';
 
 const gplay = gplayModule.default || gplayModule;
 
@@ -58,14 +55,7 @@ function safeDate(v) {
 }
 
 export default async function handler(req, res) {
-  if (req.method === 'OPTIONS') { res.setHeader('Access-Control-Allow-Origin', '*'); res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS'); res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); return res.status(200).end(); }
   if (req.method !== 'POST') return sendJson(res, 405, { status: false, error: 'Method not allowed' });
-
-  let auth;
-  try { auth = await requireUser(req); }
-  catch (err) { return sendJson(res, err.status || 401, { status: false, error: err.message }); }
-
-  if (await rateLimitMiddleware(res, await checkRateLimit(auth.user.uid, 'playstore', 30, 3600))) return;
 
   const { action, query, appId } = req.body || {};
 
