@@ -1,14 +1,11 @@
-// api/build.js
 import Busboy from 'busboy';
-import { requireUser, adminDb } from './_auth.js';
-import { sendJson, errorMessage } from './_lib.js';
-import { isPackageName, isHttpUrl } from './_validate.js';
+import { sendJson } from './_lib.js';
+import { isPackageName, isHttpUrl, escapeHtml, cleanString } from './_validate.js';
 
 export const config = { api: { bodyParser: false } };
 
 const API_URL = 'https://rfweb2apk.rfdevv.com/api/apk/build-api';
 const MAX_FILE_SIZE = 4 * 1024 * 1024;
-const ROLE_LIMITS = { free: 3, pro: 5, promax: Infinity };
 
 function parseMultipart(req) {
   return new Promise((resolve, reject) => {
@@ -90,40 +87,39 @@ function getField(fields, names) {
   return '';
 }
 
+async function notifyTelegram(data) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
+  try {
+    const sourceType = data.sourceType === 'url' ? 'Website (URL)' : 'File HTML';
+    const sourceVal = data.sourceType === 'url' ? escapeHtml(cleanString(data.sourceUrl, 500)) : 'File HTML diunggah';
+    const text = `📦 <b>BUILD APK BARU</b> 📦\n\n` +
+      `👤 <b>User:</b> ${escapeHtml(cleanString(data.userName, 50)) || '(tanpa nama)'}\n` +
+      `🌐 <b>Sumber:</b> ${sourceType} - ${sourceVal}\n` +
+      `📱 <b>Nama APK:</b> ${escapeHtml(cleanString(data.appName, 100))}\n` +
+      `🆔 <b>Package:</b> ${escapeHtml(cleanString(data.packageName, 200))}`;
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true }),
+      signal: AbortSignal.timeout(8000)
+    });
+  } catch (_) {}
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return sendJson(res, 405, { success: false, error: 'Gunakan metode POST.' });
   }
 
-  // === 1. AUTH ===
-  let auth;
-  try {
-    auth = await requireUser(req);
-  } catch (err) {
-    return sendJson(res, err.status || 401, { success: false, error: err.message });
+  const apiKey = process.env.APIKEYYRF;
+  if (!apiKey) {
+    console.error('APIKEYYRF tidak di-set');
+    return sendJson(res, 500, { success: false, error: 'Konfigurasi server belum lengkap.' });
   }
 
-  // === 2. ROLE-BASED LIMIT ===
-  const limit = ROLE_LIMITS[auth.role] ?? 3;
-  const today = new Date().toISOString().slice(0, 10);
-  const counterRef = adminDb().ref(`build_counts/${auth.user.uid}_${today}`);
-  let currentCount = 0;
-
-  if (limit !== Infinity) {
-    const snap = await counterRef.get();
-    currentCount = snap.exists() ? Number(snap.val().count || 0) : 0;
-    if (currentCount >= limit) {
-      return sendJson(res, 429, {
-        success: false,
-        error: `Limit build harian tercapai (${currentCount}/${limit}). Upgrade paket untuk lebih banyak.`,
-        limit,
-        count: currentCount
-      });
-    }
-  }
-
-  // === 3. MULTIPART ===
   let parsed;
   try {
     parsed = await parseMultipart(req);
@@ -132,6 +128,7 @@ export default async function handler(req, res) {
   }
 
   const { fields, files } = parsed;
+  const userName = getField(fields, ['userName']);
   const appName = getField(fields, ['appName']);
   const packageName = getField(fields, ['packageName']);
   const url = getField(fields, ['url', 'websiteUrl']);
@@ -148,12 +145,6 @@ export default async function handler(req, res) {
   }
   if (url && !isHttpUrl(url)) {
     return sendJson(res, 400, { success: false, error: 'URL tidak valid. Gunakan http:// atau https://' });
-  }
-
-  const apiKey = process.env.APIKEYYRF;
-  if (!apiKey) {
-    console.error('APIKEYYRF tidak di-set');
-    return sendJson(res, 500, { success: false, error: 'Konfigurasi server belum lengkap.' });
   }
 
   const form = new FormData();
@@ -174,7 +165,6 @@ export default async function handler(req, res) {
     form.append(upstreamName, blob, file.filename);
   }
 
-  // === 4. FORWARD ===
   let upstream;
   try {
     upstream = await fetch(API_URL, {
@@ -201,18 +191,8 @@ export default async function handler(req, res) {
 
   payload = normalizeDownloadUrl(payload);
 
-  // === 5. INCREMENT COUNTER (hanya kalau sukses) ===
   if (upstream.ok) {
-    try {
-      await counterRef.set({
-        count: currentCount + 1,
-        updated_at: new Date().toISOString()
-      });
-    } catch (err) {
-      console.error('Failed to save counter:', err.message);
-    }
-    payload._count = currentCount + 1;
-    payload._limit = limit === Infinity ? -1 : limit;
+    notifyTelegram({ userName, appName, packageName, sourceType: url ? 'url' : 'file', sourceUrl: url }).catch(() => {});
   }
 
   return sendJson(res, upstream.ok ? 200 : upstream.status, payload);
