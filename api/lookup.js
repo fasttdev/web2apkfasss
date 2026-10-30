@@ -1,16 +1,11 @@
-// api/lookup.js
-import { requireUser } from './_auth.js';
 import { sendJson, errorMessage } from './_lib.js';
-import { checkRateLimit, rateLimitMiddleware } from './_rate-limit.js';
 import { isHttpUrl } from './_validate.js';
 
 const TIKIP_UPSTREAM = 'https://shinyfrydgdghfdgdgmouse-a6de.issam1996kech.workers.dev/api/v1/profile';
 const TIKIP_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 const JULZ_API_KEY = 'julzpreset';
 
-async function handleTikip(req, res, auth) {
-  if (await rateLimitMiddleware(res, await checkRateLimit(auth.user.uid, 'tikip', 20, 3600))) return;
-
+async function handleTikip(req, res) {
   let { username } = req.body || {};
   if (!username) return sendJson(res, 400, { error: 'Username wajib diisi.' });
 
@@ -86,9 +81,7 @@ async function handleTikip(req, res, auth) {
   }
 }
 
-async function handleAmfinder(req, res, auth) {
-  if (await rateLimitMiddleware(res, await checkRateLimit(auth.user.uid, 'amfinder', 10, 3600))) return;
-
+async function handleAmfinder(req, res) {
   const { url } = req.body || {};
   if (!url || !isHttpUrl(url)) {
     return sendJson(res, 400, { ok: false, error: 'URL wajib diisi dan valid.' });
@@ -123,13 +116,9 @@ async function handleAmfinder(req, res, auth) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method not allowed' });
 
-  let auth;
-  try { auth = await requireUser(req); }
-  catch (err) { return sendJson(res, err.status || 401, { error: err.message }); }
-
   const tool = String(req.query.tool || '').toLowerCase();
-  if (tool === 'tikip') return handleTikip(req, res, auth);
-  if (tool === 'amfinder') return handleAmfinder(req, res, auth);
+  if (tool === 'tikip') return handleTikip(req, res);
+  if (tool === 'amfinder') return handleAmfinder(req, res);
 
   return sendJson(res, 400, { error: 'Tool tidak dikenal.' });
 }
