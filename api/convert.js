@@ -1,7 +1,4 @@
-// api/convert.js
-import { requireUser } from './_auth.js';
 import { sendJson, errorMessage } from './_lib.js';
-import { checkRateLimit, rateLimitMiddleware } from './_rate-limit.js';
 import { FORMAT_REGEX } from './_validate.js';
 
 export const config = { maxDuration: 60, api: { bodyParser: { sizeLimit: '6mb' } } };
@@ -49,12 +46,6 @@ async function resolveInput(input) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return sendJson(res, 405, { status: false, error: 'Gunakan metode POST.' });
-
-  let auth;
-  try { auth = await requireUser(req); }
-  catch (err) { return sendJson(res, err.status || 401, { status: false, error: err.message }); }
-
-  if (await rateLimitMiddleware(res, await checkRateLimit(auth.user.uid, 'convert', 10, 3600))) return;
 
   const body = req.body || {};
   const { input, targetFormat } = body;
