@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#090d18">
-  <title>Info — FastDev Web2APK</title>
+  <title>Info — Opsidev</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -31,7 +31,7 @@
     .wa-button svg { width: 16px; height: 16px; }
 
     .credit-list { margin-top: 8px; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: rgba(7,11,21,.3); display: grid; gap: 10px; }
-    .credit-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 11px; }
+    .credit-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; }
     .credit-item span { color: var(--muted); }
     .credit-item a { color: #9eafff; text-decoration: none; font-weight: 700; }
 
@@ -46,88 +46,42 @@
     <header class="topbar">
       <a class="brand" href="index.html">
         <span class="brand-icon"><i data-lucide="layers"></i></span>
-        <span class="brand-copy"><strong>Web2APK</strong><small>BY FASTDEV</small></span>
+        <span class="brand-copy"><strong>Opsidev</strong><small>WEBSITE UNTUK SEMUA</small></span>
       </a>
       <button class="icon-button" type="button" id="helpBtn" aria-label="Bantuan"><i data-lucide="circle-help"></i></button>
     </header>
 
     <section class="hero info-hero">
-      <div class="hero-label"><span class="live-dot"></span> TENTANG</div>
-      <h1>Serba <span>gratis.</span></h1>
-      <p>Tanpa login. Tanpa daftar. Tanpa batas. Semua fitur terbuka untuk siapa saja.</p>
-      <div style="margin-top:16px;"><span class="version-tag">v2.0 · FREE FOREVER</span></div>
+      <div class="hero-label"><span class="live-dot"></span> OPSIDEV</div>
+      <h1 id="infoTagline">Memuat…</h1>
+      <p id="infoSubtitle"></p>
+      <div style="margin-top:16px;"><span class="version-tag" id="infoBadge"></span></div>
     </section>
 
     <div class="section-heading">
       <div><span class="eyebrow">FITUR</span><h2>Yang kamu dapat</h2></div>
     </div>
 
-    <div class="feature-list">
-      <div class="feature-card">
-        <span class="feature-icon"><i data-lucide="hammer"></i></span>
-        <div class="feature-body">
-          <b>Build APK tanpa batas</b>
-          <small>Ubah website atau file HTML menjadi aplikasi Android. Unlimited, kapan saja.</small>
-        </div>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon"><i data-lucide="wrench"></i></span>
-        <div class="feature-body">
-          <b>14 tools lengkap</b>
-          <small>Downloader TikTok/Pinterest/YouTube/UC, search, konverter, uploader, deployer, chat AI.</small>
-        </div>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon"><i data-lucide="shield-check"></i></span>
-        <div class="feature-body">
-          <b>Tanpa registrasi</b>
-          <small>Cukup masuk nama, build, selesai. Tidak ada data yang disimpan di server.</small>
-        </div>
-      </div>
-      <div class="feature-card">
-        <span class="feature-icon"><i data-lucide="zap"></i></span>
-        <div class="feature-body">
-          <b>Cepat & ringan</b>
-          <small>Proses langsung di server. Hasil build langsung bisa diunduh.</small>
-        </div>
-      </div>
-    </div>
+    <div class="feature-list" id="featureList"></div>
 
-    <div class="cta-card">
-      <h3>Ada masalah atau request fitur?</h3>
-      <p>Hubungi admin via WhatsApp. Balas cepat, ramah tamah.</p>
+    <div class="cta-card" id="contactCard">
+      <h3 id="contactTitle"></h3>
+      <p id="contactDesc"></p>
       <a class="wa-button" id="waContact" href="#" target="_blank" rel="noopener noreferrer">
         <i data-lucide="message-circle"></i>
-        <span>Chat Admin</span>
+        <span id="contactLabel">Chat Admin</span>
       </a>
     </div>
 
     <div class="section-heading" style="margin-top:28px;">
-      <div><span class="eyebrow">KREDIT</span><h2>Terima kasih kepada</h2></div>
+      <div><span class="eyebrow">THANKS TO</span><h2>Terima kasih</h2></div>
     </div>
 
-    <div class="credit-list">
-      <div class="credit-item">
-        <span>API Builder</span>
-        <a href="https://rfweb2apk.rfdevv.com" target="_blank" rel="noopener">rfweb2apk</a>
-      </div>
-      <div class="credit-item">
-        <span>Scraper API</span>
-        <a href="https://codeku.izzcs.my.id" target="_blank" rel="noopener">codeku.izzcs</a>
-      </div>
-      <div class="credit-item">
-        <span>Utility API</span>
-        <a href="https://vamxapi.my.id" target="_blank" rel="noopener">vamxapi</a>
-      </div>
-      <div class="credit-item">
-        <span>Chat AI</span>
-        <a href="https://9routeruncensored.my.id" target="_blank" rel="noopener">9router</a>
-      </div>
-    </div>
+    <div class="credit-list" id="thanksList"></div>
 
     <footer class="footer">
       <span class="footer-mark"><i data-lucide="layers"></i></span>
-      <p><b>FASTDEV</b> · Web2APK Info</p>
+      <p><b id="footerBrand">OPSIDEV</b> · <span id="footerSub">Website untuk semua</span></p>
       <small>Made for your next idea.</small>
     </footer>
   </main>
@@ -152,18 +106,87 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <script src="info-content.js"></script>
   <script>
   (function () {
     'use strict';
 
-    // Ganti nomor WA di sini kalau perlu
-    const WA_NUMBER = "6285196241829";
-    const WA_TEXT = encodeURIComponent("Halo Admin FastDev, saya mau tanya soal Web2APK.");
+    const $ = (s) => document.querySelector(s);
+    const escapeHtml = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
-    const wa = document.getElementById('waContact');
-    if (wa) wa.href = `https://wa.me/${WA_NUMBER}?text=${WA_TEXT}`;
+    // Fallback default kalau info-content.js tidak ada
+    const DEFAULTS = {
+      tagline: "website untuk semua",
+      badge: "v2.0 · FREE FOREVER",
+      subtitle: "Tanpa login. Tanpa daftar. Tanpa batas.",
+      features: [],
+      contact: { title: "Ada masalah?", desc: "Hubungi admin via WhatsApp.", wa: "6285196241829", message: "Halo Admin Opsidev.", label: "Chat Admin" },
+      thanks: [
+        { label: "codeku.izzcs", url: "https://codeku.izzcs.my.id" },
+        { label: "vamxapi", url: "https://vamxapi.my.id" }
+      ],
+      footer: { brand: "OPSIDEV", sub: "Website untuk semua" }
+    };
 
-    const helpModal = document.getElementById('helpModal');
+    const C = Object.assign({}, DEFAULTS, window.INFO_CONTENT || {});
+
+    // Tagline: kata terakhir di-highlight warna cyan
+    function renderTagline(text) {
+      const t = String(text || '').trim();
+      const parts = t.split(/\s+/);
+      if (parts.length <= 1) return escapeHtml(t);
+      const last = parts.pop();
+      return escapeHtml(parts.join(' ')) + ' <span>' + escapeHtml(last) + '</span>.';
+    }
+
+    $('#infoTagline').innerHTML = renderTagline(C.tagline);
+    $('#infoSubtitle').textContent = C.subtitle || '';
+    $('#infoBadge').textContent = C.badge || '';
+
+    // Features
+    const featureList = $('#featureList');
+    featureList.innerHTML = (C.features || []).map(f => (
+      '<div class="feature-card">' +
+        '<span class="feature-icon"><i data-lucide="' + escapeHtml(f.icon || 'star') + '"></i></span>' +
+        '<div class="feature-body">' +
+          '<b>' + escapeHtml(f.title || '') + '</b>' +
+          '<small>' + escapeHtml(f.desc || '') + '</small>' +
+        '</div>' +
+      '</div>'
+    )).join('');
+
+    // Contact
+    if (C.contact) {
+      $('#contactTitle').textContent = C.contact.title || '';
+      $('#contactDesc').textContent = C.contact.desc || '';
+      $('#contactLabel').textContent = C.contact.label || 'Chat Admin';
+      const waNum = String(C.contact.wa || '').replace(/[^0-9]/g, '');
+      const waText = encodeURIComponent(C.contact.message || 'Halo Admin Opsidev.');
+      const waEl = $('#waContact');
+      if (waNum) waEl.href = 'https://wa.me/' + waNum + '?text=' + waText;
+    }
+
+    // Thanks
+    const thanksList = $('#thanksList');
+    if (C.thanks && C.thanks.length > 0) {
+      thanksList.innerHTML = C.thanks.map(t => (
+        '<div class="credit-item">' +
+          '<span>Thanks to</span>' +
+          '<a href="' + escapeHtml(t.url || '#') + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(t.label || '') + '</a>' +
+        '</div>'
+      )).join('');
+    } else {
+      thanksList.style.display = 'none';
+    }
+
+    // Footer
+    if (C.footer) {
+      $('#footerBrand').textContent = C.footer.brand || 'OPSIDEV';
+      $('#footerSub').textContent = C.footer.sub || 'Website untuk semua';
+    }
+
+    // Help modal
+    const helpModal = $('#helpModal');
     document.getElementById('helpBtn')?.addEventListener('click', () => helpModal?.classList.remove('hidden'));
     const closeHelp = () => helpModal?.classList.add('hidden');
     document.getElementById('closeHelp')?.addEventListener('click', closeHelp);
