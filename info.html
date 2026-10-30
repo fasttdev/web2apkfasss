@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090d18">
+  <title>Info — FastDev Web2APK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .info-hero { padding-bottom: 20px; text-align: center; }
+    .info-hero h1 span { color: var(--cyan); }
+    .info-hero > p { margin-left: auto; margin-right: auto; max-width: 340px; }
+
+    .feature-list { display: grid; gap: 12px; margin-top: 8px; }
+    .feature-card { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(145deg, rgba(20, 28, 47, .92), rgba(14, 20, 35, .92)); }
+    .feature-icon { display: grid; place-items: center; width: 40px; height: 40px; flex: 0 0 auto; border-radius: 12px; background: rgba(112, 137, 255, .1); color: #9eafff; }
+    .feature-icon svg { width: 20px; height: 20px; }
+    .feature-body { flex: 1; min-width: 0; display: grid; gap: 4px; }
+    .feature-body b { font-size: 13px; color: #dbe3f6; }
+    .feature-body small { color: var(--muted); font-size: 11px; line-height: 1.6; }
+
+    .cta-card { margin-top: 24px; padding: 20px; border-radius: 20px; border: 1px solid rgba(105,228,177,.2); background: linear-gradient(145deg, rgba(15,30,25,.9), rgba(10,20,15,.9)); text-align: center; }
+    .cta-card h3 { margin: 0 0 8px; font-size: 16px; color: #fff; }
+    .cta-card p { margin: 0 0 16px; color: #8ee8c3; font-size: 12px; line-height: 1.6; }
+    .wa-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 12px; background: linear-gradient(110deg, #25d366, #128c7e); color: #fff; font-size: 12px; font-weight: 700; text-decoration: none; }
+    .wa-button svg { width: 16px; height: 16px; }
+
+    .credit-list { margin-top: 8px; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: rgba(7,11,21,.3); display: grid; gap: 10px; }
+    .credit-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 11px; }
+    .credit-item span { color: var(--muted); }
+    .credit-item a { color: #9eafff; text-decoration: none; font-weight: 700; }
+
+    .version-tag { display: inline-block; padding: 4px 10px; border-radius: 8px; background: rgba(117,144,255,.1); border: 1px solid rgba(117,144,255,.24); color: #9eafff; font-size: 9px; font-weight: 800; letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <main class="app">
+    <header class="topbar">
+      <a class="brand" href="index.html">
+        <span class="brand-icon"><i data-lucide="layers"></i></span>
+        <span class="brand-copy"><strong>Web2APK</strong><small>BY FASTDEV</small></span>
+      </a>
+      <button class="icon-button" type="button" id="helpBtn" aria-label="Bantuan"><i data-lucide="circle-help"></i></button>
+    </header>
+
+    <section class="hero info-hero">
+      <div class="hero-label"><span class="live-dot"></span> TENTANG</div>
+      <h1>Serba <span>gratis.</span></h1>
+      <p>Tanpa login. Tanpa daftar. Tanpa batas. Semua fitur terbuka untuk siapa saja.</p>
+      <div style="margin-top:16px;"><span class="version-tag">v2.0 · FREE FOREVER</span></div>
+    </section>
+
+    <div class="section-heading">
+      <div><span class="eyebrow">FITUR</span><h2>Yang kamu dapat</h2></div>
+    </div>
+
+    <div class="feature-list">
+      <div class="feature-card">
+        <span class="feature-icon"><i data-lucide="hammer"></i></span>
+        <div class="feature-body">
+          <b>Build APK tanpa batas</b>
+          <small>Ubah website atau file HTML menjadi aplikasi Android. Unlimited, kapan saja.</small>
+        </div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon"><i data-lucide="wrench"></i></span>
+        <div class="feature-body">
+          <b>14 tools lengkap</b>
+          <small>Downloader TikTok/Pinterest/YouTube/UC, search, konverter, uploader, deployer, chat AI.</small>
+        </div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon"><i data-lucide="shield-check"></i></span>
+        <div class="feature-body">
+          <b>Tanpa registrasi</b>
+          <small>Cukup masuk nama, build, selesai. Tidak ada data yang disimpan di server.</small>
+        </div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon"><i data-lucide="zap"></i></span>
+        <div class="feature-body">
+          <b>Cepat & ringan</b>
+          <small>Proses langsung di server. Hasil build langsung bisa diunduh.</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-card">
+      <h3>Ada masalah atau request fitur?</h3>
+      <p>Hubungi admin via WhatsApp. Balas cepat, ramah tamah.</p>
+      <a class="wa-button" id="waContact" href="#" target="_blank" rel="noopener noreferrer">
+        <i data-lucide="message-circle"></i>
+        <span>Chat Admin</span>
+      </a>
+    </div>
+
+    <div class="section-heading" style="margin-top:28px;">
+      <div><span class="eyebrow">KREDIT</span><h2>Terima kasih kepada</h2></div>
+    </div>
+
+    <div class="credit-list">
+      <div class="credit-item">
+        <span>API Builder</span>
+        <a href="https://rfweb2apk.rfdevv.com" target="_blank" rel="noopener">rfweb2apk</a>
+      </div>
+      <div class="credit-item">
+        <span>Scraper API</span>
+        <a href="https://codeku.izzcs.my.id" target="_blank" rel="noopener">codeku.izzcs</a>
+      </div>
+      <div class="credit-item">
+        <span>Utility API</span>
+        <a href="https://vamxapi.my.id" target="_blank" rel="noopener">vamxapi</a>
+      </div>
+      <div class="credit-item">
+        <span>Chat AI</span>
+        <a href="https://9routeruncensored.my.id" target="_blank" rel="noopener">9router</a>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <span class="footer-mark"><i data-lucide="layers"></i></span>
+      <p><b>FASTDEV</b> · Web2APK Info</p>
+      <small>Made for your next idea.</small>
+    </footer>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navigasi utama">
+    <a href="index.html" class="nav-item"><i data-lucide="hammer"></i><span>Build</span></a>
+    <a href="tools1.html" class="nav-item"><i data-lucide="wrench"></i><span>Tools 1</span></a>
+    <a href="tools2.html" class="nav-item"><i data-lucide="package"></i><span>Tools 2</span></a>
+    <a href="search-tools.html" class="nav-item"><i data-lucide="search"></i><span>Cari</span></a>
+    <a href="info.html" class="nav-item active" aria-current="page"><i data-lucide="info"></i><span>Info</span></a>
+  </nav>
+
+  <div class="modal-backdrop hidden" id="helpModal">
+    <section class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="closeHelp" type="button"><i data-lucide="x"></i></button>
+      <span class="section-icon"><i data-lucide="circle-help"></i></span>
+      <h3>Bantuan Info</h3>
+      <p>Semua fitur gratis dan tanpa login. Kalau ada masalah, klik tombol Chat Admin.</p>
+      <button class="primary-button" id="closeHelpBottom" type="button">Mengerti</button>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    // Ganti nomor WA di sini kalau perlu
+    const WA_NUMBER = "6285196241829";
+    const WA_TEXT = encodeURIComponent("Halo Admin FastDev, saya mau tanya soal Web2APK.");
+
+    const wa = document.getElementById('waContact');
+    if (wa) wa.href = `https://wa.me/${WA_NUMBER}?text=${WA_TEXT}`;
+
+    const helpModal = document.getElementById('helpModal');
+    document.getElementById('helpBtn')?.addEventListener('click', () => helpModal?.classList.remove('hidden'));
+    const closeHelp = () => helpModal?.classList.add('hidden');
+    document.getElementById('closeHelp')?.addEventListener('click', closeHelp);
+    document.getElementById('closeHelpBottom')?.addEventListener('click', closeHelp);
+    helpModal?.addEventListener('click', (e) => { if (e.target === helpModal) closeHelp(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && helpModal && !helpModal.classList.contains('hidden')) closeHelp(); });
+
+    if (window.lucide) window.lucide.createIcons();
+  })();
+  </script>
+</body>
+</html>
