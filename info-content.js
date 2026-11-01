@@ -11,9 +11,9 @@ window.INFO_CONTENT = {
   // Fitur-fitur (bisa tambah atau kurangi item)
   features: [
     {
-      icon: "hammer",
-      title: "Build APK tanpa batas",
-      desc: "Ubah website atau file HTML menjadi aplikasi Android. Unlimited, kapan saja."
+      icon: "fire",
+      title: "TEST PUBLIC",
+      desc: "Website ini dibuat oleh fastdev pada tanggal 29 oktober 2026."
     },
     {
       icon: "wrench",
